@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase_news_app/feature/home/home_view.dart';
 import 'package:flutter_firebase_news_app/product/initialize/application_start.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

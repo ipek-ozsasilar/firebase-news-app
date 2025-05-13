@@ -56,6 +56,11 @@ class _LoginViewState extends ConsumerState<LoginView> {
 // Firebasede bir kullanıcıya ait bilgileri bir dokumanda tutuyoruz bu okumayı kolaylastırır
 // Fakat güncellemek ısteyınce bu bıraz daha zor olacaktır
 
+//Image upload, kullanıcının cihazındaki bir resmi uygulamanın sunucularına yüklemesi işlemidir.
+//Firestore'da büyük dosyaları saklamak veritabanını yavaşlatır, Dosya saklamak için tasarlanmamıştır
+//Storage, dosyaları optimize edilmiş şekilde saklar ve CDN üzerinden hızlı dağıtım sağlar
+//Firestore dökümanında sadece Storage'daki görselin URL'i tutulur
+
 
 // Flutterfire configure komutu calıstırınca bıze gelen bazı google servıces ve .plist dosyalarına ignore ekledik
 // Yani bu dosyaların git tarafından izlenmemesini sağlamış olduk
