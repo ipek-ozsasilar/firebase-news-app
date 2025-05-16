@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter_firebase_news_app/product/utility/base/base_firebase_model.dart';
 //Equatable ile birlikte kullanıldığında, iki nesnenin karşılaştırılması için değerlerinin değişmemesi gerekir.
 // Aksi halde, nesne oluşturulduktan sonra değer değişirse, karşılaştırma hatalı olur.
 
-class News extends Equatable {
+class News extends BaseFirebaseModel<News> with EquatableMixin implements IdModel{
   final String? category;
   final String? categoryId;
   final String? backgroundImage;
@@ -25,6 +26,7 @@ class News extends Equatable {
     String? categoryId,
     String? backgroundImage,
     String? title,
+    @override
     String? id,
   }) {
     return News(
@@ -46,8 +48,11 @@ class News extends Equatable {
     };
   }
 
-  factory News.fromJson(Map<String, dynamic> json) {
-    return News(
+  
+  @override
+  News fromJson(Map<String, dynamic> json) {
+    // TODO: implement fromJson
+     return News(
       category: json['category'] as String?,
       categoryId: json['categoryId'] as String?,
       backgroundImage: json['backgroundImage'] as String?,
@@ -55,4 +60,12 @@ class News extends Equatable {
       id: json['id'] as String?,
     );
   }
+  
+  @override
+  set id(String? _id) {
+    // TODO: implement id
+    id=_id;
+  }
+  
+  
 }
