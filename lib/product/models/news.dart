@@ -2,7 +2,16 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_firebase_news_app/product/utility/base/base_firebase_model.dart';
 //Equatable ile birlikte kullanıldığında, iki nesnenin karşılaştırılması için değerlerinin değişmemesi gerekir.
 // Aksi halde, nesne oluşturulduktan sonra değer değişirse, karşılaştırma hatalı olur.
-
+/*
+dartj ye bu json dosyasını verdik yanı bize donmesını ıstedıgımız verı bu demek ıstedık
+{
+  "category": "",
+  "categoryId": "",
+  "backgroundImage": "",
+  "title": "",
+  "id": ""
+}
+ */
 class News extends BaseFirebaseModel<News> with EquatableMixin implements IdModel{
   final String? category;
   final String? categoryId;

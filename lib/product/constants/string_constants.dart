@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 @immutable
 class StringConstants{
  const StringConstants._();
- static const appName="Flutter Demo";
+ static const appName="Nuntium";
 
 }
 

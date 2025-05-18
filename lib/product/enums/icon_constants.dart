@@ -18,7 +18,8 @@ extension _StringPath on String{
 //enhanced enums (gelişmiş enum) yapısı
 //extension yazmaya gerek kalmadı bir daha
 enum IconConstants {
-  microphone('inside_microphone');
+  microphone('inside_microphone'),
+  logo('inside_flower_logo');
 
   final String value;
   const IconConstants(this.value);

@@ -37,7 +37,15 @@ class _HomeListView extends StatelessWidget {
     // withConverter, Firestore'dan gelen JSON verileri News modelimize dönüştürür yani gelen objeyı parse eder
     // fromFirestore: JSON'dan News nesnesine dönüştürür
     // toFirestore: News nesnesinden JSON'a dönüştürür
-    final response =
+
+    //fromJson()	JSON verisini Dart modeline çevirir
+    //withConverter()	Firestore verisini otomatik olarak modele çevirir ve tersini yapar
+    //ID'yi sen eklemiyorsun, fromFirestore fonksiyonu zaten ekliyor. Model dönüşümü otomatik oluyor.
+    //Get işlemi sonucu news koleksiyonundaki verilerin tamamı gelir. Yani tüm dokümanlar geliyor.
+    //Firestore’dan veri çekmek için isteği gönderir.
+    //Sonucu Future<QuerySnapshot<News>> tipinde bir “gelecek veri” olarak verir.
+    //Future döner, yani henüz veriler değil, veriler geleceğine dair bir söz (promise/future) verir.
+    final response = 
         news
             .withConverter(
               fromFirestore: (snapshot, options) {
@@ -55,6 +63,7 @@ class _HomeListView extends StatelessWidget {
             )
             .get();
 
+    //final List<News> allNews = response.docs.map((doc) => doc.data()).toList();
     return FutureBuilder(
       //get diyerek read işlemi yapacağız. Ama snapshot.data.Data() diyerek datayı alıp map e atmak sağlıklı değil
       //Her zaman önce internetten çekilecek datanın bir modelini oluşturarak onu kullanmak daha sağlıklı ve güvenlidir
@@ -65,6 +74,7 @@ class _HomeListView extends StatelessWidget {
         BuildContext context,
         AsyncSnapshot<QuerySnapshot<News?>> snapshot,
       ) {
+        //snapshot dediğimiz şey, response gelecekte döndüğünde onu sarmalayan bir nesnedir.
         switch (snapshot.connectionState) {
           //datanın farklı internetsiz, aktif vs vs durumlarında ona göre kod yazılır
           case ConnectionState.none:
@@ -79,6 +89,10 @@ class _HomeListView extends StatelessWidget {
           case ConnectionState.done:
             // TODO: Handle this case.
             if (snapshot.hasData) {
+              // snapshot.data!  Yani bütün koleksiyonun verisi burada.
+              //snapshot.data!.docs → Bütün dökümanların listesi
+              //e.data() → Her bir dökümandan News modelini alırsın.
+              //snpshot.data  Yani koleksiyonun tamamı
                final values=snapshot.data!.docs.map((e) => e.data()).toList();
                return ListView.builder(
                  itemCount: values.length,
@@ -106,3 +120,6 @@ class _HomeListView extends StatelessWidget {
     );
   }
 }
+
+
+
