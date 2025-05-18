@@ -8,6 +8,7 @@ import 'package:flutter_firebase_news_app/product/models/news.dart';
 
 //Tüm modellerin (örneğin News) bir id alanı olmasını zorunlu kıldık
 //Yani, bu soyut sınıfı extend eden her modelde id olacak.
+//Sonucta farklı modellerle kullanılabilir ve biz id alanı içeren bir model extends edebılsın ıstıyoruz
 abstract class IdModel{
   String? get id;
 }
