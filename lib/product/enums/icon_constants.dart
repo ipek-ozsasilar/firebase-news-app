@@ -25,6 +25,7 @@ enum IconConstants {
   const IconConstants(this.value);
 
   String get toPng => 'assets/icon/$value.png';
+  Image get toImage => Image.asset(toPng);
 }
 
 
