@@ -44,6 +44,9 @@ dependencies:
   #animations
   animated_text_kit: ^4.2.3
 
+  #app info
+  package_info_plus: ^8.3.0
+
 
 
 

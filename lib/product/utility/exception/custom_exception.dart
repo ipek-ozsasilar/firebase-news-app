@@ -8,3 +8,15 @@ class FirebaseCustomException implements Exception {
   }
   
 }
+
+
+class VersionCustomException implements Exception {
+  final String description;
+  VersionCustomException({required this.description});
+  
+  @override
+  String toString() {
+    return "$this.description";
+  }
+  
+}

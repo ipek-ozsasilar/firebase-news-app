@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_firebase_news_app/product/models/news.dart';
+import 'package:flutter_firebase_news_app/product/utility/exception/custom_exception.dart';
 
 //Firestore'dan veri çekerken her model için tekrar tekrar aynı kodları yazmak yerine,ortak bir temel yapı oluşturduk
 //Her modelin bir id'si olmalı (çünkü Firestore'da her dökümanın bir ID'si var).
@@ -19,10 +20,10 @@ abstract class BaseFirebaseModel <T extends IdModel> {
 
    //Firestore’dan gelen dökümanı alır, önce veriyi çeker, sonra Firestore’daki döküman ID’sini de ekler, 
    //en son fromJson ile model nesnesi oluşturur.
-   T? fromFirebase(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+   T fromFirebase(DocumentSnapshot<Map<String, dynamic>> snapshot) {
     final value=snapshot.data();
     if (value==null) {
-      return null;
+      throw FirebaseCustomException(description: '$snapshot data is null');
     }
     //fixme: idyi key olarak çıkarıcağız
     value.addEntries([MapEntry("id", snapshot.id)]);
