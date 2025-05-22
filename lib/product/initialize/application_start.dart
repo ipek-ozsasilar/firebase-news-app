@@ -5,10 +5,9 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_news_app/firebase_options.dart';
 
-
 // Burada bir ekstra degısken vs kullanılmayacagı ıcın constructorı prıvate yaptık
 // Bir data girişini vs de engellemek ıcın ımmutable yaptık sınıfı
-// Bu init işlemini yaparak firebase'e connection saglamıs olduk 
+// Bu init işlemini yaparak firebase'e connection saglamıs olduk
 // Bu kısım daha giriş ekranına gelmeden çalışır
 @immutable
 class ApplicationStart {
@@ -20,7 +19,7 @@ class ApplicationStart {
     //Bu satır Firebase'i başlatır bu kod firebase core paketi ile gelir
     await Firebase.initializeApp(
       //Bu kısım, Firebase'in hangi platformda (Android, iOS, Web) çalıştığını otomatik olarak algılar
-      options:DefaultFirebaseOptions.currentPlatform, 
+      options: DefaultFirebaseOptions.currentPlatform,
     );
 
     //Firebase authentıcatıon kullanacagımız ıcın onceden bunu set etmemız gerekıyor yıne uygulama baslamadan
@@ -31,6 +30,5 @@ class ApplicationStart {
       //clientid yı google info.json dosyasından alabiliriz
       GoogleProvider(clientId: ''),
     ]);
-  
   }
 }
