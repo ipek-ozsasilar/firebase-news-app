@@ -41,6 +41,10 @@ dependencies:
   cloud_firestore: ^5.6.7
   firebase_core: ^3.13.0
   firebase_ui_auth: ^1.16.1
+  firebase_ui_oauth_google: ^1.4.1
+
+  #google ayth kullanmak istersek bu sign in paketini de eklemek zorundayız
+  #google_sign_in: ^6.3.0
 
   #Firebase auth
   firebase_auth: ^5.5.4
