@@ -52,6 +52,9 @@ dependencies:
   #animations
   animated_text_kit: ^4.2.3
 
+  #storage
+  shared_preferences: ^2.5.3
+
 
   
 

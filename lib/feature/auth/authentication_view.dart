@@ -20,6 +20,23 @@ class _AuthenticationState extends ConsumerState<AuthenticationView> {
       return AuthenticationNotifier();
     },
   );
+
+  @override
+  void initState() {
+    super.initState();
+    //Firebase Authentication'da bir kullanıcı bir kez oturum açtığında, oturum otomatik olarak cihazda kalıcı hale gelir.
+    // Yani kullanıcıyı manuel olarak çıkış yaptırmadığın sürece, FirebaseAuth.instance.currentUser daima o kullanıcıyı döndürür.
+    //Sayfayı yenilemek veya uygulamayı yeniden başlatmak logout işlemi değildir.
+    //print(FirebaseAuth.instance.currentUser);
+    checkUser(FirebaseAuth.instance.currentUser);
+    
+  }
+  void checkUser(User? user) {
+    ref
+        .read(AuthProvider.notifier)
+        .fetchUserDetail(user);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +54,7 @@ class _AuthenticationState extends ConsumerState<AuthenticationView> {
             //başarılı giriş yapan kullanıcının bilgilerini (FirebaseUser) kontrol eder.
             if (state.user != null) {
               print('okay'); // yani bu adam bu sisteme kayıt oldu
+              checkUser(state.user);
             }
           }),
         ],
@@ -54,25 +72,13 @@ class _AuthenticationState extends ConsumerState<AuthenticationView> {
               child: Padding(
                 padding: context.padding.low,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      StringConstants.loginWelcomeBack,
-                      style: context.general.appTheme.textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      StringConstants.loginWelcomeDetail,
-                      style:
-                          context.general.appTheme.textTheme.titleMedium,
-                    ),
+                    _HeaderLogin(),
                     Padding(
                       padding: context.padding.normal,
                       child: firebase.LoginView(
                         //showTitle: false,
-                        footerBuilder: (context, action) {
-                          return Text("data");
-                        },
                         action: firebase.AuthAction.signIn,
                         //providers kısmında Firebase Authentication için yapılandırılmış tüm kimlik doğrulama sağlayıcılarını (providers) otomatik olarak alır
                         //Örneğin, hem email/password hem Google auth etkinleştirdiyseniz, bu fonksiyon otomatik olarak her iki yöntemi de kullanıma hazır hale getirir.
@@ -83,6 +89,15 @@ class _AuthenticationState extends ConsumerState<AuthenticationView> {
                         ),
                       ),
                     ),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        StringConstants.loginContinueToApp,
+                        textAlign: TextAlign.center,
+                        style: context.general.appTheme.textTheme.bodySmall
+                            ?.copyWith(decoration: TextDecoration.underline),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -90,6 +105,33 @@ class _AuthenticationState extends ConsumerState<AuthenticationView> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _HeaderLogin extends StatelessWidget {
+  const _HeaderLogin({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          StringConstants.loginWelcomeBack,
+          style: context.general.appTheme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        Padding(
+          padding: context.padding.onlyTopLow,
+          child: Text(
+            StringConstants.loginWelcomeDetail,
+            style: context.general.appTheme.textTheme.titleMedium,
+          ),
+        ),
+      ],
     );
   }
 }

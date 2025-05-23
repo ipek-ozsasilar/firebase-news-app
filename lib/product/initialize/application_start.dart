@@ -4,6 +4,7 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_news_app/firebase_options.dart';
+import 'package:flutter_firebase_news_app/product/initialize/app_cache.dart';
 
 // Burada bir ekstra degısken vs kullanılmayacagı ıcın constructorı prıvate yaptık
 // Bir data girişini vs de engellemek ıcın ımmutable yaptık sınıfı
@@ -30,5 +31,9 @@ class ApplicationStart {
       //clientid yı google info.json dosyasından alabiliriz
       GoogleProvider(clientId: ''),
     ]);
+    
+    //Bu sayede uygulamanın herhangi bir yerinde AppCache.instance.prefs.getString(...) gibi 
+    //işlemler yapmadan önce, sistemin hazır olduğundan emin oluyorsun.
+    await AppCache.instance.setUp();
   }
 }
