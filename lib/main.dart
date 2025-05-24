@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: StringConstants.appName,
       theme: ThemeData.light(useMaterial3: true),
-      home: AuthenticationView(),
+      home: HomeView(),
     );
   }
 }

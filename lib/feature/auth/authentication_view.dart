@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_firebase_news_app/feature/auth/authentication_provider.dart';
 import 'package:flutter_firebase_news_app/product/constants/string_constants.dart';
 import 'package:flutter_firebase_news_app/product/theme/app_theme.dart';
+import 'package:flutter_firebase_news_app/product/widget/text/subtitle_text.dart';
+import 'package:flutter_firebase_news_app/product/widget/text/title_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kartal/kartal.dart';
@@ -74,7 +76,7 @@ class _AuthenticationState extends ConsumerState<AuthenticationView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _HeaderLogin(),
+                    Header(title: StringConstants.loginWelcomeBack, subtitle: StringConstants.loginWelcomeDetail),
                     Padding(
                       padding: context.padding.normal,
                       child: firebase.LoginView(
@@ -109,29 +111,26 @@ class _AuthenticationState extends ConsumerState<AuthenticationView> {
   }
 }
 
-class _HeaderLogin extends StatelessWidget {
-  const _HeaderLogin({super.key});
-
+class Header extends StatelessWidget {
+   Header({super.key, required this.title, required this.subtitle});
+  final String title;
+  final String subtitle;
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          StringConstants.loginWelcomeBack,
-          style: context.general.appTheme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+        TitleText(
+          value: title,
         ),
 
         Padding(
           padding: context.padding.onlyTopLow,
-          child: Text(
-            StringConstants.loginWelcomeDetail,
-            style: context.general.appTheme.textTheme.titleMedium,
-          ),
+          child: SubTitleText(value:subtitle,)
         ),
       ],
     );
   }
 }
+
+

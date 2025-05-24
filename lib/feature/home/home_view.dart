@@ -1,3 +1,157 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_firebase_news_app/feature/auth/authentication_view.dart';
+import 'package:flutter_firebase_news_app/product/constants/color_constants.dart';
+import 'package:flutter_firebase_news_app/product/constants/string_constants.dart';
+import 'package:flutter_firebase_news_app/product/widget/text/subtitle_text.dart';
+import 'package:flutter_firebase_news_app/product/widget/text/title_text.dart';
+import 'package:kartal/kartal.dart';
+
+class HomeView extends StatelessWidget {
+  const HomeView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      //Flutter'da cihazın güvenli alanında içeriği göstermek için kullanılan bir widget'dır. Modern
+      //cihazlardaki kesikler, kameralar ve sistem UI elementlerinin üzerine içerik gelmesini önler.
+      //Eğer içerik yukarıya denk geliyor gözükmüyorsa vs bu wıdget kullanılabılır veya paddıng
+      child: SafeArea(
+        child: ListView(
+          padding: context.padding.horizontalLow,
+          children: [
+            Header(
+              title: StringConstants.homeBrowse,
+              subtitle: StringConstants.homeDiscoverWorld,
+            ),
+            _CustomTextField(),
+            //iç içe ıkı tane sonsuzluk olan wıdget kullanamazsın bu yuzden buraya sızedbox ıle sarmaladık
+            //Ve widgetın ne kadar yer kapladığını söyledik
+            _TagListView(),
+
+            _BrowseHorizontalListView(),
+
+            _RecommendedHeader(),
+
+            _RecommendedListView(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CustomTextField extends StatelessWidget {
+  const _CustomTextField({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      decoration: InputDecoration(
+        prefixIcon: Icon(Icons.search_outlined),
+        suffixIcon: Icon(Icons.mic_outlined),
+        border: OutlineInputBorder(
+          borderSide: BorderSide.none,
+        ),
+        fillColor: ColorConstants.grayLighter,
+        filled: true,
+        hintText: StringConstants.homeSearchHint,
+      ),
+    );
+  }
+}
+
+class _TagListView extends StatelessWidget {
+  const _TagListView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: context.sized.dynamicHeight(0.1),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 4,
+        itemBuilder: (context, index) {
+          return Chip(label: Text('label'));
+        },
+      ),
+    );
+  }
+}
+
+class _BrowseHorizontalListView extends StatelessWidget {
+  const _BrowseHorizontalListView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: context.sized.dynamicHeight(0.2),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 4,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: context.padding.onlyRightNormal,
+            child: Placeholder(),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _RecommendedHeader extends StatelessWidget {
+  const _RecommendedHeader({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: context.padding.onlyTopLow,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          TitleText(value: StringConstants.homeRecommendTitle),
+          TextButton(onPressed: (){}, child: SubTitleText(value: StringConstants.homeSeeAll)),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecommendedListView extends StatelessWidget {
+  const _RecommendedListView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      //Normal şartlarda ListView, mevcut olan tüm alanı kaplamaya çalışır. Yani parent
+      //widget'ın verdiği alanın tamamını kullanır ve sonsuz yükseklikte genişlemeye çalışır.
+      //shrinkWrap: true olduğunda ListView: Sadece içeriği kadar yer kaplar
+      shrinkWrap: true,
+      //Scroll sınırlarında durur (bounce/sekme efekti yoktur)
+      //Glow efekti gösterir (Android'deki mavi parıldama) Over-scroll yapmaz
+      physics: ClampingScrollPhysics(),
+      itemCount: 5,
+      itemBuilder: (BuildContext context, int index) {
+        return Padding(
+          padding: context.padding.onlyBottomLow,
+          child: Placeholder(),
+        );
+      },
+    );
+  }
+}
+
+/*
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_news_app/product/models/news.dart';
@@ -137,3 +291,5 @@ class _HomeListView extends StatelessWidget {
 // FlutterFire CLI, firebase_options.dart gibi dosyaları oluştururken, bu dosyaların genellikle her kullanıcı 
 // için farklı olabileceğini ve bu nedenle sürüm kontrolüne dahil edilmemesi gerektiğini düşünür. 
 // Bu nedenle, bu dosyaları .gitignore dosyasına eklemek yaygın bir uygulamadır..
+
+*/
