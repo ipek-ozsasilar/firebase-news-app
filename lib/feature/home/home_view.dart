@@ -6,6 +6,8 @@ import 'package:flutter_firebase_news_app/product/widget/text/subtitle_text.dart
 import 'package:flutter_firebase_news_app/product/widget/text/title_text.dart';
 import 'package:kartal/kartal.dart';
 
+part 'sub_view/home_chip.dart';
+
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
@@ -75,12 +77,17 @@ class _TagListView extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: 4,
         itemBuilder: (context, index) {
-          return Chip(label: Text('label'));
+          if(index.isOdd){
+            return _ActiveChip();
+          }
+          return _PassiveChip();
         },
       ),
     );
   }
 }
+
+
 
 class _BrowseHorizontalListView extends StatelessWidget {
   const _BrowseHorizontalListView({
