@@ -1,17 +1,38 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_news_app/feature/auth/authentication_view.dart';
+import 'package:flutter_firebase_news_app/feature/home/home_provider.dart';
 import 'package:flutter_firebase_news_app/product/constants/color_constants.dart';
 import 'package:flutter_firebase_news_app/product/constants/string_constants.dart';
 import 'package:flutter_firebase_news_app/product/enums/image_sizes.dart';
-import 'package:flutter_firebase_news_app/product/enums/widget_sizes.dart';
+import 'package:flutter_firebase_news_app/product/widget/card/home_browse_card.dart';
 import 'package:flutter_firebase_news_app/product/widget/text/subtitle_text.dart';
 import 'package:flutter_firebase_news_app/product/widget/text/title_text.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kartal/kartal.dart';
 
 part 'sub_view/home_chip.dart';
 
-class HomeView extends StatelessWidget {
+//bu provider global kullanımı genelde yapılır
+//sadece bu sayfadakılerın bu provıderı kullanması ıcın prıvate yaptık
+//Dosyanın en üstünde her yerden erişilebilir
+final _homeProvider = StateNotifierProvider<HomeNotifier,HomeState>((ref) {
+    return HomeNotifier();
+  });
+
+class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _HomState();
+}
+
+class _HomState extends ConsumerState<HomeView> {
+  @override
+  void initState() {
+    super.initState();
+    ref.read(_homeProvider.notifier).fetchNews();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +58,14 @@ class HomeView extends StatelessWidget {
             _RecommendedHeader(),
 
             _RecommendedListView(),
-          ],
+
+             ],
         ),
       ),
     );
   }
 }
+
 
 class _CustomTextField extends StatelessWidget {
   const _CustomTextField({super.key});
@@ -83,86 +106,30 @@ class _TagListView extends StatelessWidget {
   }
 }
 
-class _BrowseHorizontalListView extends StatelessWidget {
+class _BrowseHorizontalListView extends ConsumerWidget {
   const _BrowseHorizontalListView({super.key});
-  //dısarıdan da erısılebılsın dıye suanlık statıc yaptık
+
+  
+
+ //dısarıdan da erısılebılsın dıye suanlık statıc yaptık
   static const dummyImage =
       'https://res.cloudinary.com/dxogshuni/image/upload/v1747136751/white_house_x8cfck.png';
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+    final newsItem=ref.watch(_homeProvider).newsList ?? [];
     return SizedBox(
       height: context.sized.dynamicHeight(0.3),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: 4,
+        itemCount: newsItem.length ?? 0,
         itemBuilder: (context, index) {
-          return _HorizontalCard(dummyImage: dummyImage);
+          return HomeBrowseCard(newsItem: newsItem[index],);
         },
       ),
     );
   }
 }
 
-class _HorizontalCard extends StatelessWidget {
-  const _HorizontalCard({
-    super.key,
-    required this.dummyImage,
-  });
-
-  final String dummyImage;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Padding(
-          padding: context.padding.onlyRightNormal,
-          child: Image.network(_BrowseHorizontalListView.dummyImage,errorBuilder: (context, error, stackTrace) => Icon(Icons.error),),
-        ),
-        //Positioned.fill, bir Stack içindeki child widget'ı parent'ın tüm alanını kaplayacak şekilde konumlandırır.
-        // Yani: Top: 0 Bottom: 0 Left: 0 Right: 0 overlayler ıcın falann idealdir
-        Positioned.fill(
-          child: Padding(
-            padding: context.padding.low,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.bookmark_outline,
-                    color: ColorConstants.white,
-                    size: WidgetSizes.iconNormal.value.toDouble(),
-                  ),
-                ),
-                
-                //ıkı texte ayrı ayrı paddıng vermek yerıne column ıle sarmalayıp ona verdık paddıngı
-                Padding(
-                  padding: context.padding.low,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start, 
-                    children: [
-                      SubTitleText(
-                        value: 'POLITICS',
-                        color: ColorConstants.grayLighter,
-                      ),
-                      Spacer(),
-                      Text(
-                        'The latest situation in the presidential election',
-                        style: context.general.textTheme.titleMedium
-                            ?.copyWith(color: ColorConstants.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class _RecommendedHeader extends StatelessWidget {
   const _RecommendedHeader({super.key});
@@ -193,23 +160,28 @@ class _RecommendedListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      //Normal şartlarda ListView, mevcut olan tüm alanı kaplamaya çalışır. Yani parent
-      //widget'ın verdiği alanın tamamını kullanır ve sonsuz yükseklikte genişlemeye çalışır.
-      //shrinkWrap: true olduğunda ListView: Sadece içeriği kadar yer kaplar
-      shrinkWrap: true,
-      //Scroll sınırlarında durur (bounce/sekme efekti yoktur)
-      //Glow efekti gösterir (Android'deki mavi parıldama) Over-scroll yapmaz
-      physics: ClampingScrollPhysics(),
-      itemCount: 5,
-      itemBuilder: (BuildContext context, int index) {
-        return Padding(
-          padding: context.padding.onlyBottomLow,
-          //normalde listtile kullanılır ama row ile yapıyoruz çünkü listtile kullanırsak resmin sizenı oturtamadıgımı gorunce row yapalım dedık
-          //tum componentler tum hepsıne uyacak dıye bır sey yok bazen bariz listtile gibi gözukse de degerler vs uymayabılır
-          child: _RecommendedCard(dummyImage: dummyImage),
-        );
-      },
+    return SizedBox(
+      height: 700,
+      child: ListView.builder(
+        //Normal şartlarda ListView, mevcut olan tüm alanı kaplamaya çalışır. Yani parent
+        //widget'ın verdiği alanın tamamını kullanır ve sonsuz yükseklikte genişlemeye çalışır.
+        //shrinkWrap: true olduğunda ListView: Sadece içeriği kadar yer kaplar
+        //ama bu shrinkwrap true olduğunda bütün içeriği tek seferde hesapladığı için performans düşebilir. 
+        //Çünkü shrinkWrap: true olduğunda tüm elemanları önceden ölçmek zorunda kalır. lazy loading etkısı azaltır.
+        shrinkWrap: true,
+        //Scroll sınırlarında durur (bounce/sekme efekti yoktur)
+        //Glow efekti gösterir (Android'deki mavi parıldama) Over-scroll yapmaz
+        physics: ClampingScrollPhysics(),
+        itemCount: 5,
+        itemBuilder: (BuildContext context, int index) {
+          return Padding(
+            padding: context.padding.onlyBottomLow,
+            //normalde listtile kullanılır ama row ile yapıyoruz çünkü listtile kullanırsak resmin sizenı oturtamadıgımı gorunce row yapalım dedık
+            //tum componentler tum hepsıne uyacak dıye bır sey yok bazen bariz listtile gibi gözukse de degerler vs uymayabılır
+            child: _RecommendedCard(dummyImage: dummyImage),
+          );
+        },
+      ),
     );
   }
 }
@@ -233,142 +205,25 @@ class _RecommendedCard extends StatelessWidget {
           width: ImageSizes.normal.value.toDouble(),
           errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
           ),
+          
           Expanded(
             child: ListTile(
-             
-              title: Text('UI/UX Design'),
-              subtitle: Text('A Simple Trick For Creating Color Palettes Quickly'),
+              
+              
+                title: Text('UI/UX Design'),
+                subtitle: Text('A Simple Trick For Creating Color Palettes Quickly'),
+              
             ),
-          ),
+          )
         ],
       ),
     );
   }
 }
 
-/*
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_firebase_news_app/product/models/news.dart';
-import 'package:flutter_firebase_news_app/product/utility/exception/custom_exception.dart';
-import 'package:kartal/kartal.dart';
-
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
-
-  @override
-  State<HomeView> createState() => _HomeViewState();
-}
-
-class _HomeViewState extends State<HomeView> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      // Datayı okumak ve gostermek ıcın ıkı secenek var ya futurebuilder kullanmak
-      // ikinci olarak da datayi init oldugu anda cekip setstate ile göstermek
-      body: _HomeListView(),
-    );
-  }
-}
-
-class _HomeListView extends StatelessWidget {
-  const _HomeListView({
-    super.key,
-  });
 
 
-  @override
-  Widget build(BuildContext context) {
-    // FirebaseFirestore.instance ile Firestore servisine bağlanılır
-    CollectionReference news = FirebaseFirestore.instance.collection('news');
 
-    // withConverter, Firestore'dan gelen JSON verileri News modelimize dönüştürür yani gelen objeyı parse eder
-    // fromFirestore: JSON'dan News nesnesine dönüştürür
-    // toFirestore: News nesnesinden JSON'a dönüştürür
-
-    //fromJson()	JSON verisini Dart modeline çevirir
-    //withConverter()	Firestore verisini otomatik olarak modele çevirir ve tersini yapar
-    //ID'yi sen eklemiyorsun, fromFirestore fonksiyonu zaten ekliyor. Model dönüşümü otomatik oluyor.
-    //Get işlemi sonucu news koleksiyonundaki verilerin tamamı gelir. Yani tüm dokümanlar geliyor.
-    //Firestore’dan veri çekmek için isteği gönderir.
-    //Sonucu Future<QuerySnapshot<News>> tipinde bir “gelecek veri” olarak verir.
-    //Future döner, yani henüz veriler değil, veriler geleceğine dair bir söz (promise/future) verir.
-    final response = 
-        news
-            .withConverter(
-              fromFirestore: (snapshot, options) {
-                return News().fromFirebase(snapshot);
-              },
-              toFirestore: (value, options) {
-                if (value == null)
-                  throw FirebaseCustomException(description: "$value not null");
-                return value is News
-                    ? value.toJson()
-                    : throw FirebaseCustomException(
-                      description: "$value is not News",
-                    );
-              },
-            )
-            .get();
-
-    //final List<News> allNews = response.docs.map((doc) => doc.data()).toList();
-    return FutureBuilder(
-      //get diyerek read işlemi yapacağız. Ama snapshot.data.Data() diyerek datayı alıp map e atmak sağlıklı değil
-      //Her zaman önce internetten çekilecek datanın bir modelini oluşturarak onu kullanmak daha sağlıklı ve güvenlidir
-      future: response,
-    
-      // AsyncSnapshot, future/stream'den gelen datanın durumunu ve verisini tutan bir sınıftır
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<QuerySnapshot<News?>> snapshot,
-      ) {
-        //snapshot dediğimiz şey, response gelecekte döndüğünde onu sarmalayan bir nesnedir.
-        switch (snapshot.connectionState) {
-          //datanın farklı internetsiz, aktif vs vs durumlarında ona göre kod yazılır
-          case ConnectionState.none:
-            // TODO: Handle this case.
-            return Placeholder();
-          case ConnectionState.waiting:
-            // TODO: Handle this case.
-            return LinearProgressIndicator();
-          case ConnectionState.active:
-            // TODO: Handle this case.
-            return LinearProgressIndicator();
-          case ConnectionState.done:
-            // TODO: Handle this case.
-            if (snapshot.hasData) {
-              // snapshot.data!  Yani bütün koleksiyonun verisi burada.
-              //snapshot.data!.docs → Bütün dökümanların listesi
-              //e.data() → Her bir dökümandan News modelini alırsın.
-              //snpshot.data  Yani koleksiyonun tamamı
-               final values=snapshot.data!.docs.map((e) => e.data()).toList();
-               return ListView.builder(
-                 itemCount: values.length,
-                 itemBuilder: (BuildContext context, int index) {
-                   return Card(
-                    child: Column(
-                      children: [
-                         Image.network(
-                          values[index]?.backgroundImage ?? "",
-                          //kartal paketini kullanarak ekranın yuzde 10unu kapsayan bir alan oluşturuyoruz
-                          height: context.sized.dynamicHeight(0.1),
-                         ),
-                         Text(values[index]?.title ?? "", style: context.general.textTheme.labelLarge,),
-    
-                      ],
-                    ),
-                   );
-                 },
-               );
-            } else {
-              return const SizedBox.shrink();
-            }
-        }
-      },
-    );
-  }
-}
 
 
 // Firebasede bir kullanıcıya ait bilgileri bir dokumanda tutuyoruz bu okumayı kolaylastırır
@@ -387,4 +242,4 @@ class _HomeListView extends StatelessWidget {
 // için farklı olabileceğini ve bu nedenle sürüm kontrolüne dahil edilmemesi gerektiğini düşünür. 
 // Bu nedenle, bu dosyaları .gitignore dosyasına eklemek yaygın bir uygulamadır..
 
-*/
+
