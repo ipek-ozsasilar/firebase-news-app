@@ -5,7 +5,8 @@
 //Instance değişkenleri final olmak zorundadır ve Üretilen tüm constructorlar const olmalıdır. gıbı sınırlanmaları var tabi.
 
 enum ImageSizes{
-  high(256);
+  high(256),
+  normal(96);
   
   final int value;
   const ImageSizes(this.value);

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_firebase_news_app/feature/auth/authentication_view.dart';
 import 'package:flutter_firebase_news_app/product/constants/color_constants.dart';
 import 'package:flutter_firebase_news_app/product/constants/string_constants.dart';
+import 'package:flutter_firebase_news_app/product/enums/image_sizes.dart';
+import 'package:flutter_firebase_news_app/product/enums/widget_sizes.dart';
 import 'package:flutter_firebase_news_app/product/widget/text/subtitle_text.dart';
 import 'package:flutter_firebase_news_app/product/widget/text/title_text.dart';
 import 'package:kartal/kartal.dart';
@@ -43,9 +45,7 @@ class HomeView extends StatelessWidget {
 }
 
 class _CustomTextField extends StatelessWidget {
-  const _CustomTextField({
-    super.key,
-  });
+  const _CustomTextField({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +53,7 @@ class _CustomTextField extends StatelessWidget {
       decoration: InputDecoration(
         prefixIcon: Icon(Icons.search_outlined),
         suffixIcon: Icon(Icons.mic_outlined),
-        border: OutlineInputBorder(
-          borderSide: BorderSide.none,
-        ),
+        border: OutlineInputBorder(borderSide: BorderSide.none),
         fillColor: ColorConstants.grayLighter,
         filled: true,
         hintText: StringConstants.homeSearchHint,
@@ -65,9 +63,7 @@ class _CustomTextField extends StatelessWidget {
 }
 
 class _TagListView extends StatelessWidget {
-  const _TagListView({
-    super.key,
-  });
+  const _TagListView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +73,7 @@ class _TagListView extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: 4,
         itemBuilder: (context, index) {
-          if(index.isOdd){
+          if (index.isOdd) {
             return _ActiveChip();
           }
           return _PassiveChip();
@@ -87,35 +83,89 @@ class _TagListView extends StatelessWidget {
   }
 }
 
-
-
 class _BrowseHorizontalListView extends StatelessWidget {
-  const _BrowseHorizontalListView({
-    super.key,
-  });
-
+  const _BrowseHorizontalListView({super.key});
+  //dısarıdan da erısılebılsın dıye suanlık statıc yaptık
+  static const dummyImage =
+      'https://res.cloudinary.com/dxogshuni/image/upload/v1747136751/white_house_x8cfck.png';
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: context.sized.dynamicHeight(0.2),
+      height: context.sized.dynamicHeight(0.3),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: 4,
         itemBuilder: (context, index) {
-          return Padding(
-            padding: context.padding.onlyRightNormal,
-            child: Placeholder(),
-          );
+          return _HorizontalCard(dummyImage: dummyImage);
         },
       ),
     );
   }
 }
 
-class _RecommendedHeader extends StatelessWidget {
-  const _RecommendedHeader({
+class _HorizontalCard extends StatelessWidget {
+  const _HorizontalCard({
     super.key,
+    required this.dummyImage,
   });
+
+  final String dummyImage;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Padding(
+          padding: context.padding.onlyRightNormal,
+          child: Image.network(_BrowseHorizontalListView.dummyImage,errorBuilder: (context, error, stackTrace) => Icon(Icons.error),),
+        ),
+        //Positioned.fill, bir Stack içindeki child widget'ı parent'ın tüm alanını kaplayacak şekilde konumlandırır.
+        // Yani: Top: 0 Bottom: 0 Left: 0 Right: 0 overlayler ıcın falann idealdir
+        Positioned.fill(
+          child: Padding(
+            padding: context.padding.low,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.bookmark_outline,
+                    color: ColorConstants.white,
+                    size: WidgetSizes.iconNormal.value.toDouble(),
+                  ),
+                ),
+                
+                //ıkı texte ayrı ayrı paddıng vermek yerıne column ıle sarmalayıp ona verdık paddıngı
+                Padding(
+                  padding: context.padding.low,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, 
+                    children: [
+                      SubTitleText(
+                        value: 'POLITICS',
+                        color: ColorConstants.grayLighter,
+                      ),
+                      Spacer(),
+                      Text(
+                        'The latest situation in the presidential election',
+                        style: context.general.textTheme.titleMedium
+                            ?.copyWith(color: ColorConstants.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _RecommendedHeader extends StatelessWidget {
+  const _RecommendedHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +175,10 @@ class _RecommendedHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TitleText(value: StringConstants.homeRecommendTitle),
-          TextButton(onPressed: (){}, child: SubTitleText(value: StringConstants.homeSeeAll)),
+          TextButton(
+            onPressed: () {},
+            child: SubTitleText(value: StringConstants.homeSeeAll),
+          ),
         ],
       ),
     );
@@ -133,9 +186,10 @@ class _RecommendedHeader extends StatelessWidget {
 }
 
 class _RecommendedListView extends StatelessWidget {
-  const _RecommendedListView({
-    super.key,
-  });
+  const _RecommendedListView({super.key});
+
+  static const dummyImage =
+      'https://res.cloudinary.com/dxogshuni/image/upload/v1748168727/simple_trick_uv1k8k.png';
 
   @override
   Widget build(BuildContext context) {
@@ -151,9 +205,43 @@ class _RecommendedListView extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         return Padding(
           padding: context.padding.onlyBottomLow,
-          child: Placeholder(),
+          //normalde listtile kullanılır ama row ile yapıyoruz çünkü listtile kullanırsak resmin sizenı oturtamadıgımı gorunce row yapalım dedık
+          //tum componentler tum hepsıne uyacak dıye bır sey yok bazen bariz listtile gibi gözukse de degerler vs uymayabılır
+          child: _RecommendedCard(dummyImage: dummyImage),
         );
       },
+    );
+  }
+}
+
+class _RecommendedCard extends StatelessWidget {
+  const _RecommendedCard({
+    super.key,
+    required this.dummyImage,
+  });
+
+  final String dummyImage;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: context.padding.onlyTopLow,
+      child: Row(
+        children: [
+          Image.network(_RecommendedListView.dummyImage,
+          height: ImageSizes.normal.value.toDouble(),
+          width: ImageSizes.normal.value.toDouble(),
+          errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+          ),
+          Expanded(
+            child: ListTile(
+             
+              title: Text('UI/UX Design'),
+              subtitle: Text('A Simple Trick For Creating Color Palettes Quickly'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
