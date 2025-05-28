@@ -31,7 +31,16 @@ class _HomState extends ConsumerState<HomeView> {
   @override
   void initState() {
     super.initState();
-    ref.read(_homeProvider.notifier).fetchNews();
+    //ref.read(...) gibi bazı işlemler için ekranın (widget'ın) biraz hazırlık yapması gerekiyor.
+    //Eğer hemen çalıştırırsan "daha hazır değilim" diye hata verebilir.
+    //bazen bu işlemleri başlatmak için ekranın tamamen hazır olmasını beklememiz gerekir.
+    //fetchAndLoad() fonksiyonunu hemen çalıştırma.Birkaç milisaniye bekle, ekran biraz hazırlansın.
+    //Sonra çalıştır. Cunku initState içinde bazı işlemler erken yapılırsa hata çıkar.
+    //Bazı durumlarda build() çok hızlı davranırsa, microtask build'ten sonra da çalışabilir.
+    //Ama genelde initState → microtask → build gibi olur.Yani frame bıttıkten sonra bır logıc yapılır
+    Future.microtask(() {
+       ref.read(_homeProvider.notifier).fetchAndLoad();
+    });
   }
 
   @override
@@ -41,25 +50,33 @@ class _HomState extends ConsumerState<HomeView> {
       //cihazlardaki kesikler, kameralar ve sistem UI elementlerinin üzerine içerik gelmesini önler.
       //Eğer içerik yukarıya denk geliyor gözükmüyorsa vs bu wıdget kullanılabılır veya paddıng
       child: SafeArea(
-        child: ListView(
-          padding: context.padding.horizontalLow,
+        child: Stack(
           children: [
-            Header(
-              title: StringConstants.homeBrowse,
-              subtitle: StringConstants.homeDiscoverWorld,
+            ListView(
+              padding: context.padding.horizontalLow,
+              children: [
+                Header(
+                  title: StringConstants.homeBrowse,
+                  subtitle: StringConstants.homeDiscoverWorld,
+                ),
+                _CustomTextField(),
+                //iç içe ıkı tane sonsuzluk olan wıdget kullanamazsın bu yuzden buraya sızedbox ıle sarmaladık
+                //Ve widgetın ne kadar yer kapladığını söyledik
+                _TagListView(),
+            
+                _BrowseHorizontalListView(),
+            
+                _RecommendedHeader(),
+            
+                _RecommendedListView(),
+            
+                 ],
             ),
-            _CustomTextField(),
-            //iç içe ıkı tane sonsuzluk olan wıdget kullanamazsın bu yuzden buraya sızedbox ıle sarmaladık
-            //Ve widgetın ne kadar yer kapladığını söyledik
-            _TagListView(),
 
-            _BrowseHorizontalListView(),
 
-            _RecommendedHeader(),
-
-            _RecommendedListView(),
-
-             ],
+            if (ref.watch(_homeProvider).isLoading ?? false) 
+            Center(child: CircularProgressIndicator()),
+          ],
         ),
       ),
     );
