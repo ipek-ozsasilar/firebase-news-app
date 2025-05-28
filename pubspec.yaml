@@ -43,6 +43,9 @@ dependencies:
   firebase_ui_auth: ^1.16.1
   firebase_ui_oauth_google: ^1.4.1
 
+  #image picker
+  image_picker: ^1.1.2
+
   #google ayth kullanmak istersek bu sign in paketini de eklemek zorundayız
   #google_sign_in: ^6.3.0
 

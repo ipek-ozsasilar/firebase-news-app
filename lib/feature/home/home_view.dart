@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_news_app/feature/auth/authentication_view.dart';
+import 'package:flutter_firebase_news_app/feature/home/home_create/home_create_view.dart';
 import 'package:flutter_firebase_news_app/feature/home/home_provider.dart';
 import 'package:flutter_firebase_news_app/feature/home/sub_view/home_search_delegate.dart';
 import 'package:flutter_firebase_news_app/product/constants/color_constants.dart';
@@ -61,13 +62,25 @@ class _HomeState extends ConsumerState<HomeView> {
     });
   }
 
+  //image_picker paketiGaleriden resim veya video seçmek Kamera ile
+  // anlık fotoğraf veya video çekmek için kullanılır.
+
+
+
   @override
   Widget build(BuildContext context) {
-    return Material(
+    return Scaffold(
+
+      floatingActionButton: FloatingActionButton.large(
+        child: Icon(Icons.add),
+        onPressed: () {
+          context.route.navigateToPage(HomeCreateView());
+                }
+        ),
       //Flutter'da cihazın güvenli alanında içeriği göstermek için kullanılan bir widget'dır. Modern
       //cihazlardaki kesikler, kameralar ve sistem UI elementlerinin üzerine içerik gelmesini önler.
       //Eğer içerik yukarıya denk geliyor gözükmüyorsa vs bu wıdget kullanılabılır veya paddıng
-      child: SafeArea(
+      body: SafeArea(
         child: Stack(
           children: [
             ListView(
