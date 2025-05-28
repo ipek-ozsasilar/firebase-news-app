@@ -15,6 +15,7 @@ class HomeSearchDelegate extends SearchDelegate<Tag?> {
     return[
       IconButton(
         onPressed: (){
+          //query kullanıcının arama kutusuna yazdığı metni temsil eder.
           query='';
         },
         icon: Icon(Icons.clear),

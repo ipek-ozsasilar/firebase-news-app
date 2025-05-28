@@ -8,6 +8,7 @@ import 'package:flutter_firebase_news_app/product/constants/string_constants.dar
 import 'package:flutter_firebase_news_app/product/enums/image_sizes.dart';
 import 'package:flutter_firebase_news_app/product/models/recommended.dart';
 import 'package:flutter_firebase_news_app/product/models/tag.dart';
+import 'package:flutter_firebase_news_app/product/utility/exception/custom_exception.dart';
 import 'package:flutter_firebase_news_app/product/widget/card/home_browse_card.dart';
 import 'package:flutter_firebase_news_app/product/widget/card/recommended_card.dart';
 import 'package:flutter_firebase_news_app/product/widget/text/subtitle_text.dart';
@@ -28,10 +29,10 @@ class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _HomState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _HomeState();
 }
 
-class _HomState extends ConsumerState<HomeView> {
+class _HomeState extends ConsumerState<HomeView> {
   TextEditingController _controller = TextEditingController();
   @override
   void dispose() {
@@ -108,7 +109,7 @@ class _CustomTextField extends ConsumerWidget {
       onTap: () async {
         final tagList = ref.read(_homeProvider).tagList ?? [];
         if (tagList.isEmpty) {
-          print("tagler henüz yüklenmedi");
+          throw FirebaseCustomException(description: 'tags dont upload yet');
         }
 
         final response = await showSearch<Tag?>(
@@ -116,6 +117,7 @@ class _CustomTextField extends ConsumerWidget {
           delegate: HomeSearchDelegate(tagItems: tagList),
         );
         if (response != null) {
+          //search fieldına yazılan tag değerine gidecek uygulama ve o tag actif olacak rengi degisecek
           ref.read(_homeProvider.notifier).updateSelectedTag(response);
         }
       },
@@ -226,26 +228,5 @@ class _RecommendedListView extends ConsumerWidget {
   }
 }
 
-
-
-
-
-
-
-// Firebasede bir kullanıcıya ait bilgileri bir dokumanda tutuyoruz bu okumayı kolaylastırır
-// Fakat güncellemek ısteyınce bu bıraz daha zor olacaktır
-
-//Image upload, kullanıcının cihazındaki bir resmi uygulamanın sunucularına yüklemesi işlemidir.
-//Firestore'da büyük dosyaları saklamak veritabanını yavaşlatır, Dosya saklamak için tasarlanmamıştır
-//Storage, dosyaları optimize edilmiş şekilde saklar ve CDN üzerinden hızlı dağıtım sağlar
-//Firestore dökümanında sadece Storage'daki görselin URL'i tutulur
-
-
-// Flutterfire configure komutu calıstırınca bıze gelen bazı google servıces ve .plist dosyalarına ignore ekledik
-// Yani bu dosyaların git tarafından izlenmemesini sağlamış olduk
-// Bu, genellikle gizli bilgiler içeren veya her kullanıcı için farklı olabilecek dosyalar için yapılır
-// FlutterFire CLI, firebase_options.dart gibi dosyaları oluştururken, bu dosyaların genellikle her kullanıcı 
-// için farklı olabileceğini ve bu nedenle sürüm kontrolüne dahil edilmemesi gerektiğini düşünür. 
-// Bu nedenle, bu dosyaları .gitignore dosyasına eklemek yaygın bir uygulamadır..
 
 
