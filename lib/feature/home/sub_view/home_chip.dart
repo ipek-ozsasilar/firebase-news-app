@@ -4,13 +4,15 @@ part of '../home_view.dart';
 class _ActiveChip extends StatelessWidget {
   const _ActiveChip({
     super.key,
+    required this.tag,
   });
+  final Tag tag;
 
   @override
   Widget build(BuildContext context) {
     return Chip(
     backgroundColor: ColorConstants.purplePrimary,
-    label: Text('label active',style: context.general.textTheme.bodySmall?.copyWith(
+    label: Text(tag.name ?? '',style: context.general.textTheme.bodySmall?.copyWith(
       color: ColorConstants.white,
       ),),
     padding: context.padding.low,
@@ -24,13 +26,14 @@ class _ActiveChip extends StatelessWidget {
 class _PassiveChip extends StatelessWidget {
   const _PassiveChip({
     super.key,
+    required this.tag,
   });
-
+ final Tag tag;
   @override
   Widget build(BuildContext context) {
     return Chip(
       backgroundColor: ColorConstants.grayLighter,
-      label: Text('label passive',style: context.general.textTheme.bodySmall?.copyWith(
+      label: Text(tag.name ?? '',style: context.general.textTheme.bodySmall?.copyWith(
         color: ColorConstants.grayPrimary,
         ),),
       padding: context.padding.low,

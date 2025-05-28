@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_firebase_news_app/product/models/recommended.dart';
 import 'package:flutter_firebase_news_app/product/models/tag.dart';
 import 'package:flutter_firebase_news_app/product/utility/firebase/firebase_utility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,10 +13,21 @@ import 'package:flutter_firebase_news_app/product/utility/firebase/firebase_coll
 class HomeNotifier extends StateNotifier<HomeState> with FirebaseUtility{
   HomeNotifier(): super(HomeState());
 
+  List<Tag>? _fullTextTagList= [];
+  List<Tag>? get fullTextTagList => fullTextTagList;
+
    Future<void> fetchNews() async {
       final items=await fetchList<News,News>(News(),FirebaseCollections.news);
       if(items!=null){
         state=state.copyWith(newsList: items);
+      }
+
+  }
+
+  Future<void> fetchRecommended() async {
+      final items=await fetchList<Recommended,Recommended>(Recommended(),FirebaseCollections.recommended);
+      if(items!=null){
+        state=state.copyWith(recommendedList: items);
       }
 
   }
@@ -28,6 +40,9 @@ class HomeNotifier extends StateNotifier<HomeState> with FirebaseUtility{
     if(items!=null){
       state=state.copyWith(tagList: items);
     }
+
+    _fullTextTagList=items ?? [];
+
 
     
     /*CollectionReference tagCollectionsReference = FirebaseCollections.tag.reference;
@@ -61,12 +76,30 @@ class HomeNotifier extends StateNotifier<HomeState> with FirebaseUtility{
 
   }
 
+  void updateSelectedTag(Tag? tag) {
+    if (tag != null) {
+      state=state.copyWith(selectedTag: tag);
+    }
+    else{
+      return;
+    }
+  }
+
   
   //isloadıngı yukarıda yazmadık cunku metodları kendı ısı dısına cıkarmamalıyız
+  //Burada Sırayla çalışıyor - her biri diğerinin bitmesini bekliyor!
   Future<void> fetchAndLoad() async {
     state = state.copyWith(isLoading: true);
-    await fetchNews();
-    await fetchTags();
+    //Eğer bu 3 metodu aynı anda hepsi başlasın yani paralel çalışsın istersek future.wait kullanabiliriz
+    //Tabi bunu sayfa bağımlılığımız yoksa yapabiliriz yani ornegın ılk cekılen fetchnewsten bellı degerlerı alıp
+    //sonra dıgerlerı bu degerlerı kullanarak data cekme ıslemı yapacaksa bu bagımlılık olur ve sırayla yapılması gerekır
+    //Bunu yapmak ıcın future.wait kullanılır cunku bırbırlerıne bır bagımlılıkları yoktur
+    //Boylelıkle 3 unu de aynı anda future queue (kuyruguna) koyar ve calıstırır
+    Future.wait([
+      fetchNews(),
+      fetchTags(),
+      fetchRecommended(),
+    ]);
     state = state.copyWith(isLoading: false);
 
   }
@@ -80,23 +113,29 @@ class HomeState extends Equatable {
 
   final List<News>? newsList;
   final List<Tag>? tagList;
+  final List<Recommended>? recommendedList;
   bool? isLoading;
+  final Tag? selectedTag;
 
-  HomeState({this.newsList,this.tagList,this.isLoading});
+  HomeState({this.newsList,this.tagList,this.isLoading,this.recommendedList,this.selectedTag});
   @override
   // TODO: implement props
-  List<Object?> get props => [newsList, isLoading, tagList];
+  List<Object?> get props => [newsList, isLoading, tagList,recommendedList,selectedTag];
   
 
   HomeState copyWith({
     List<News>? newsList,
     bool? isLoading,
     List<Tag>? tagList,
+    List<Recommended>? recommendedList,
+    Tag? selectedTag,
   }) {
     return HomeState(
       newsList: newsList ?? this.newsList,
       isLoading: isLoading ?? this.isLoading,
-      tagList: tagList ?? this.tagList,
+      tagList: tagList ?? this.tagList, 
+      recommendedList: recommendedList ?? this.recommendedList,
+      selectedTag: selectedTag ?? this.selectedTag,
     );
   }
 }

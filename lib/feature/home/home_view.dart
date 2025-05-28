@@ -2,10 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_news_app/feature/auth/authentication_view.dart';
 import 'package:flutter_firebase_news_app/feature/home/home_provider.dart';
+import 'package:flutter_firebase_news_app/feature/home/sub_view/home_search_delegate.dart';
 import 'package:flutter_firebase_news_app/product/constants/color_constants.dart';
 import 'package:flutter_firebase_news_app/product/constants/string_constants.dart';
 import 'package:flutter_firebase_news_app/product/enums/image_sizes.dart';
+import 'package:flutter_firebase_news_app/product/models/recommended.dart';
+import 'package:flutter_firebase_news_app/product/models/tag.dart';
 import 'package:flutter_firebase_news_app/product/widget/card/home_browse_card.dart';
+import 'package:flutter_firebase_news_app/product/widget/card/recommended_card.dart';
 import 'package:flutter_firebase_news_app/product/widget/text/subtitle_text.dart';
 import 'package:flutter_firebase_news_app/product/widget/text/title_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,9 +20,9 @@ part 'sub_view/home_chip.dart';
 //bu provider global kullanımı genelde yapılır
 //sadece bu sayfadakılerın bu provıderı kullanması ıcın prıvate yaptık
 //Dosyanın en üstünde her yerden erişilebilir
-final _homeProvider = StateNotifierProvider<HomeNotifier,HomeState>((ref) {
-    return HomeNotifier();
-  });
+final _homeProvider = StateNotifierProvider<HomeNotifier, HomeState>((ref) {
+  return HomeNotifier();
+});
 
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
@@ -28,6 +32,13 @@ class HomeView extends ConsumerStatefulWidget {
 }
 
 class _HomState extends ConsumerState<HomeView> {
+  TextEditingController _controller = TextEditingController();
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +50,13 @@ class _HomState extends ConsumerState<HomeView> {
     //Bazı durumlarda build() çok hızlı davranırsa, microtask build'ten sonra da çalışabilir.
     //Ama genelde initState → microtask → build gibi olur.Yani frame bıttıkten sonra bır logıc yapılır
     Future.microtask(() {
-       ref.read(_homeProvider.notifier).fetchAndLoad();
+      ref.read(_homeProvider.notifier).fetchAndLoad();
+    });
+
+    ref.read(_homeProvider.notifier).addListener((state) {
+      if (state.selectedTag != null) {
+        _controller.text = state.selectedTag?.name ?? '';
+      }
     });
   }
 
@@ -59,23 +76,21 @@ class _HomState extends ConsumerState<HomeView> {
                   title: StringConstants.homeBrowse,
                   subtitle: StringConstants.homeDiscoverWorld,
                 ),
-                _CustomTextField(),
+                _CustomTextField(controller: _controller),
                 //iç içe ıkı tane sonsuzluk olan wıdget kullanamazsın bu yuzden buraya sızedbox ıle sarmaladık
                 //Ve widgetın ne kadar yer kapladığını söyledik
                 _TagListView(),
-            
+
                 _BrowseHorizontalListView(),
-            
+
                 _RecommendedHeader(),
-            
+
                 _RecommendedListView(),
-            
-                 ],
+              ],
             ),
 
-
-            if (ref.watch(_homeProvider).isLoading ?? false) 
-            Center(child: CircularProgressIndicator()),
+            if (ref.watch(_homeProvider).isLoading ?? false)
+              Center(child: CircularProgressIndicator()),
           ],
         ),
       ),
@@ -83,13 +98,27 @@ class _HomState extends ConsumerState<HomeView> {
   }
 }
 
-
-class _CustomTextField extends StatelessWidget {
-  const _CustomTextField({super.key});
-
+class _CustomTextField extends ConsumerWidget {
+  _CustomTextField({super.key, required this.controller});
+  final TextEditingController controller;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return TextField(
+      controller: controller,
+      onTap: () async {
+        final tagList = ref.read(_homeProvider).tagList ?? [];
+        if (tagList.isEmpty) {
+          print("tagler henüz yüklenmedi");
+        }
+
+        final response = await showSearch<Tag?>(
+          context: context,
+          delegate: HomeSearchDelegate(tagItems: tagList),
+        );
+        if (response != null) {
+          ref.read(_homeProvider.notifier).updateSelectedTag(response);
+        }
+      },
       decoration: InputDecoration(
         prefixIcon: Icon(Icons.search_outlined),
         suffixIcon: Icon(Icons.mic_outlined),
@@ -102,21 +131,23 @@ class _CustomTextField extends StatelessWidget {
   }
 }
 
-class _TagListView extends StatelessWidget {
+class _TagListView extends ConsumerWidget {
   const _TagListView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tagItems = ref.watch(_homeProvider).tagList ?? [];
     return SizedBox(
       height: context.sized.dynamicHeight(0.1),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: 4,
+        itemCount: tagItems.length ?? 0,
         itemBuilder: (context, index) {
-          if (index.isOdd) {
-            return _ActiveChip();
+          final tagItem = tagItems[index];
+          if (tagItem.active ?? false) {
+            return _ActiveChip(tag: tagItem);
           }
-          return _PassiveChip();
+          return _PassiveChip(tag: tagItem);
         },
       ),
     );
@@ -126,27 +157,21 @@ class _TagListView extends StatelessWidget {
 class _BrowseHorizontalListView extends ConsumerWidget {
   const _BrowseHorizontalListView({super.key});
 
-  
-
- //dısarıdan da erısılebılsın dıye suanlık statıc yaptık
-  static const dummyImage =
-      'https://res.cloudinary.com/dxogshuni/image/upload/v1747136751/white_house_x8cfck.png';
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
-    final newsItem=ref.watch(_homeProvider).newsList ?? [];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final newsItem = ref.watch(_homeProvider).newsList ?? [];
     return SizedBox(
       height: context.sized.dynamicHeight(0.3),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: newsItem.length ?? 0,
         itemBuilder: (context, index) {
-          return HomeBrowseCard(newsItem: newsItem[index],);
+          return HomeBrowseCard(newsItem: newsItem[index]);
         },
       ),
     );
   }
 }
-
 
 class _RecommendedHeader extends StatelessWidget {
   const _RecommendedHeader({super.key});
@@ -169,33 +194,31 @@ class _RecommendedHeader extends StatelessWidget {
   }
 }
 
-class _RecommendedListView extends StatelessWidget {
+class _RecommendedListView extends ConsumerWidget {
   const _RecommendedListView({super.key});
 
-  static const dummyImage =
-      'https://res.cloudinary.com/dxogshuni/image/upload/v1748168727/simple_trick_uv1k8k.png';
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final values = ref.watch(_homeProvider).recommendedList ?? [];
     return SizedBox(
       height: 700,
       child: ListView.builder(
         //Normal şartlarda ListView, mevcut olan tüm alanı kaplamaya çalışır. Yani parent
         //widget'ın verdiği alanın tamamını kullanır ve sonsuz yükseklikte genişlemeye çalışır.
         //shrinkWrap: true olduğunda ListView: Sadece içeriği kadar yer kaplar
-        //ama bu shrinkwrap true olduğunda bütün içeriği tek seferde hesapladığı için performans düşebilir. 
+        //ama bu shrinkwrap true olduğunda bütün içeriği tek seferde hesapladığı için performans düşebilir.
         //Çünkü shrinkWrap: true olduğunda tüm elemanları önceden ölçmek zorunda kalır. lazy loading etkısı azaltır.
         shrinkWrap: true,
         //Scroll sınırlarında durur (bounce/sekme efekti yoktur)
         //Glow efekti gösterir (Android'deki mavi parıldama) Over-scroll yapmaz
         physics: ClampingScrollPhysics(),
-        itemCount: 5,
+        itemCount: values.length ?? 0,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
             padding: context.padding.onlyBottomLow,
             //normalde listtile kullanılır ama row ile yapıyoruz çünkü listtile kullanırsak resmin sizenı oturtamadıgımı gorunce row yapalım dedık
             //tum componentler tum hepsıne uyacak dıye bır sey yok bazen bariz listtile gibi gözukse de degerler vs uymayabılır
-            child: _RecommendedCard(dummyImage: dummyImage),
+            child: RecommendedCard(recommended: values[index]),
           );
         },
       ),
@@ -203,40 +226,6 @@ class _RecommendedListView extends StatelessWidget {
   }
 }
 
-class _RecommendedCard extends StatelessWidget {
-  const _RecommendedCard({
-    super.key,
-    required this.dummyImage,
-  });
-
-  final String dummyImage;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: context.padding.onlyTopLow,
-      child: Row(
-        children: [
-          Image.network(_RecommendedListView.dummyImage,
-          height: ImageSizes.normal.value.toDouble(),
-          width: ImageSizes.normal.value.toDouble(),
-          errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
-          ),
-          
-          Expanded(
-            child: ListTile(
-              
-              
-                title: Text('UI/UX Design'),
-                subtitle: Text('A Simple Trick For Creating Color Palettes Quickly'),
-              
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
 
 
 

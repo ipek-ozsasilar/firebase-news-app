@@ -4,7 +4,8 @@ enum FirebaseCollections{
   news,
   tag,
   category,
-  version;
+  version,
+  recommended;
   
   //FirebaseCollections.news.reference dıyınce newsin name ını alır ve ıcıne verır
   CollectionReference get reference => FirebaseFirestore.instance.collection(name);
