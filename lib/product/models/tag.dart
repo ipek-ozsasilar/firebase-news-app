@@ -42,6 +42,7 @@ class Tag extends BaseFirebaseModel<Tag> with EquatableMixin implements IdModel 
     return Tag(
       name: json['name'] as String?,
       active: json['active'] as bool?,
+      id: json['id'] as String?,
     );
   }
   

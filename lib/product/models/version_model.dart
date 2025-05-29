@@ -27,6 +27,7 @@ class Version extends BaseFirebaseModel<Version> with EquatableMixin implements 
     // TODO: implement fromJson
     return Version(
       number: json['number'] as String?,
+      
     );
     
   }
