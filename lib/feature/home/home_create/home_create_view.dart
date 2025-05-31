@@ -46,6 +46,19 @@ class _HomeCreateViewState extends State<HomeCreateView>{
       ),
       //Form validation işlemleri kullanacağımız için form ile sarmaladık
       body:Form(
+        onChanged: () {
+          _homeLogic.checkValidateAndSave(
+
+            (value){
+              setState(() {});
+            }
+          );
+          //butonun validasyondan sonra ekranda bir değişiklik olduğunu anlaması tetiklenmesi için setstate dedık
+          //tabi buradaki dezavantaj boş yere gereksiz elemanlar da tekrar çizilecek
+          setState(() {});
+        },
+        autovalidateMode: AutovalidateMode.always,
+        key: _homeLogic.formKey,
         child: Padding(
           padding: context.padding.low,
           //listview verdik bu photo kısmının widhti infinity yani sonsuz olurdu çünkü listview 
@@ -62,12 +75,20 @@ class _HomeCreateViewState extends State<HomeCreateView>{
                     border: OutlineInputBorder(),
                     hint: Text(StringConstants.dropdownTitle),
                   ),
+                  validator: (value) => value!.isNotEmpty ? null: 'Not Empty',
                  ),
                  _EmptySizedBox(),
                 //icon butonla sarmalayı denedık baktık olmuyor tam ıstedıgımı gıbı ıstedıgımız sekılde elde edemedık butonumuzu
                 //Bizde inkwelle sarmalayalim gibi bir çözüm bulduk o nedenle bu şekilde yapıyoruz
                 InkWell(
-                  onTap: (){},
+                  onTap: () async {
+                    await _homeLogic.pickAndCheck(
+                      (value){
+                        setState(() {});
+                      }
+                    );
+                    
+                  },
                   child: SizedBox(
                     height: context.sized.dynamicHeight(0.2),
                     child: DecoratedBox(
@@ -77,7 +98,7 @@ class _HomeCreateViewState extends State<HomeCreateView>{
                           
                           ),
                       ),
-                      child: Icon(Icons.add_a_photo_outlined)),
+                      child: _homeLogic.selectedFileBytes != null? Image.memory(_homeLogic.selectedFileBytes!) : Icon(Icons.add_a_photo_outlined)),
                     ),
                 ),
                 _EmptySizedBox(),
@@ -87,7 +108,8 @@ class _HomeCreateViewState extends State<HomeCreateView>{
                     //padding: context.padding.low,
                     fixedSize: Size.fromHeight(WidgetSizes.buttonNormal.value.toDouble()),
                   ),
-                  onPressed: (){}, label: Text(StringConstants.buttonSave),icon: Icon(Icons.send,))
+                  onPressed:_homeLogic.isValidateAllForm ? (){} : null,
+                   label: Text(StringConstants.buttonSave),icon: Icon(Icons.send,))
               ],
             ),
           ),
@@ -115,8 +137,10 @@ class _HomeDropDownCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<CategoryModel>(
+      validator: (value) => value==null ?  'Not Empty' : null,
                 items: categories.map((e) {
                     return DropdownMenuItem<CategoryModel>(
+                      
                       value:e,
                       child: Column(
                         children: [
