@@ -1,5 +1,3 @@
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_news_app/feature/home/home_create/home_logic.dart';
@@ -107,6 +105,7 @@ class _HomeCreateViewState extends State<HomeCreateView>{
                   style: ElevatedButton.styleFrom(
                     //padding: context.padding.low,
                     fixedSize: Size.fromHeight(WidgetSizes.buttonNormal.value.toDouble()),
+                    backgroundColor: ColorConstants.purplePrimary,
                   ),
                   onPressed:_homeLogic.isValidateAllForm ? (){} : null,
                    label: Text(StringConstants.buttonSave),icon: Icon(Icons.send,))

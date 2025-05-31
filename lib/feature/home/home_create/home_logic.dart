@@ -1,7 +1,4 @@
-import 'dart:io';
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 import 'dart:typed_data';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_firebase_news_app/product/models/category.dart';
 import 'package:flutter_firebase_news_app/product/utility/firebase/firebase_collections.dart';
@@ -50,5 +47,9 @@ class HomeLogic with FirebaseUtility {
     );
 
     _categories = response ?? [];
+  }
+
+  void Save() {
+    
   }
 }
