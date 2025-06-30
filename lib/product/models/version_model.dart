@@ -1,9 +1,11 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_firebase_news_app/product/models/news.dart';
 import 'package:flutter_firebase_news_app/product/utility/base/base_firebase_model.dart';
-
+//map<string,dynamic> veri turunu fırebaseden gelen 2–3 model için 3 ek paket yüklemek bazen gereksiz gelir.
+//Başlangıç süresi uzar	flutter pub run build_runner build ile uğraşmak zaman alabilir.
+//Değişiklik sonrası build şart	Model değişirse tekrar build alman gerekir.
+//O nedenle json seriazible kullanmak küçük projelerde pek mantıklı değildir daha çok manuel
+//olarak elle yazmak veya dartj vs kullanmak daha mantıklıdır.
 class Version extends BaseFirebaseModel<Version> with EquatableMixin implements IdModel {
   final String? number;
 
@@ -22,6 +24,11 @@ class Version extends BaseFirebaseModel<Version> with EquatableMixin implements 
     );
   }
 
+  
+  //factory methodu bir constructor gibi çalışır: Version.fromJson(json)
+  //Version sınıfından yeni bir nesne üretmek için doğru ve doğal yöntemdir.
+  //Factory sayesinde daha sonra ister: cache kullanabilirsin,farklı sınıf döndürebilirsin,
+  //hiç döndürmeyebilirsin (return null; bile olabilir).
   @override
   Version fromJson(Map<String, dynamic> json) {
     // TODO: implement fromJson

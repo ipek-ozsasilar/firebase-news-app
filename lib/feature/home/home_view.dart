@@ -35,9 +35,12 @@ class HomeView extends ConsumerStatefulWidget {
 
 class _HomeState extends ConsumerState<HomeView> {
   TextEditingController _controller = TextEditingController();
+
   @override
   void dispose() {
     super.dispose();
+    //işin bitince controlerı dispose et
+    //Aksi halde bellekte sızıntı yapabilir.
     _controller.dispose();
   }
 
@@ -46,15 +49,26 @@ class _HomeState extends ConsumerState<HomeView> {
     super.initState();
     //ref.read(...) gibi bazı işlemler için ekranın (widget'ın) biraz hazırlık yapması gerekiyor.
     //Eğer hemen çalıştırırsan "daha hazır değilim" diye hata verebilir.
-    //bazen bu işlemleri başlatmak için ekranın tamamen hazır olmasını beklememiz gerekir.
     //fetchAndLoad() fonksiyonunu hemen çalıştırma.Birkaç milisaniye bekle, ekran biraz hazırlansın.
-    //Sonra çalıştır. Cunku initState içinde bazı işlemler erken yapılırsa hata çıkar.
-    //Bazı durumlarda build() çok hızlı davranırsa, microtask build'ten sonra da çalışabilir.
     //Ama genelde initState → microtask → build gibi olur.Yani frame bıttıkten sonra bır logıc yapılır
+    //Bu satırla, fetchAndLoad() fonksiyonu şu anda değil, bir sonraki mikro görev kuyruğunda (event loop sonunda) çalıştırılır.
+    //İnitstate çalışır bittikten hemen sonra microtask çalışır
+    // O anki senkron (eşzamanlı) işlemler biter bitmez, hemen sonra çalışır.
+    //Yani: event queue'ya gitmeden önce, öncelikli olarak çalışır.
     Future.microtask(() {
       ref.read(_homeProvider.notifier).fetchAndLoad();
     });
+    //Bu satır eşzamanlı, hemen çalışır. Önce super.initState() calısır sonra es zamanlı olan read okuması calısır
+    //microtask -> Bu görev şu anda çalıştırılmaz, sadece microtask kuyruğuna eklenir.
+    //initState biter	Artık method bitmiştir, sıradaki microtask'lar kontrol edilir ve çalışır
 
+    //ref.listen oncekı ve sonrakı state karsılastırmaya da yarar , dınler, rebuıld etmez , sayfa gecıslerınde
+    //kulllanılır genelde ve dıalog vs gosterır ardından ısı bıtınce otomatık olrak dıspose eder kendını
+    // dınlemeyı bırakır. ref.Addlistener oncekı ve sonrakı state e ulasamaz , dınler, rebuıld etmez ekranı,
+    // listen gıbı su ıslem gerceklesınce su olsun der ama kucuk ısler yapar controller.text guncelle ornegın vs gıbı
+    //Ayrıca kendısının yok etmez manuel yapman gereklı Sen controller.text = "yeni değer" yazdığında, TextField’ın
+    // içindeki controller kendisi rebuild ediyor (kendine bağlı olan TextField’ı güncelliyor).
+    //Yani bu bir Widget rebuild'i değil, controller iç mekanizmasının yaptığı bir güncelleme.
     ref.read(_homeProvider.notifier).addListener((state) {
       if (state.selectedTag != null) {
         _controller.text = state.selectedTag?.name ?? '';
