@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_firebase_news_app/product/enums/platform_enum.dart';
@@ -19,7 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 //- Kullanıcıya tanıtım videosu gösterildi mi?
 
 
-//SplashNotifier sınıfı StateNotifier<SplashState> türünden türetilmiş.
+//SplashProvider sınıfı StateNotifier<SplashState> türünden türetilmiş.
 //Yani bu sınıf içinde state kelimesi, SplashState türünde bir değişkeni temsil eder.
 class SplashProvider extends StateNotifier<SplashState>{
   SplashProvider() : super(SplashState(false, false));
@@ -50,7 +49,10 @@ class SplashProvider extends StateNotifier<SplashState>{
   Future<String?> getVersionNumberFromDatabase() async {
     //cunku eger proje web ise direkt siteyi güncelleyip atabiliriz force update yapmaya gerek yok
     if(kIsWeb) return null;
+    //withConverter, Firestore'dan okunan Map<String, dynamic> verisini doğrudan Dart modeline çevirmeni,
+    //ve tam tersi şekilde modeli Firestore’a yazarken Map’e dönüştürmeni sağlar.
     final response=await FirebaseCollections.version.reference.withConverter(
+      //Firestore'dan bir belge (DocumentSnapshot) geldiğinde, bu belgeyi Version sınıfına nasıl çevireceğimi burada tanımlıyorum.
       fromFirestore: (snapshot, options) => Version().fromFirebase(snapshot),
       toFirestore: (value, options) {
         return value.toJson();
@@ -67,7 +69,11 @@ class SplashProvider extends StateNotifier<SplashState>{
 //state1 == state2 // false döner çünkü farklı referanslar
 //Equatable ile:
 //state1 == state2 // true döner çünkü içerikleri aynı
+//Dart varsayılan olarak referansa baktığı için, aynı içeriğe sahip yeni bir nesne bile olsa rebuild olabilir.
 //Gereksiz rebuildleri önlemek adına equatable kullanıyoruz
+//equatable içerikleri aynı ise referansları karşılaştırmak yerine içeriklerini karşılaştırır.
+//Riverpod'da mantık ve veri (state) ayrı tanımlanır. SplashState veri(state) sınıfı,
+// SplashProvider ise bu veriyi yöneten mantık sınıfıdır.
 class SplashState extends Equatable {
   final bool? isRequiredForceUpdate;
   final bool? inRedirectHome;

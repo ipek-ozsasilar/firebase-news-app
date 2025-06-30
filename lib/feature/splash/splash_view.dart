@@ -8,11 +8,13 @@ import 'package:flutter_firebase_news_app/product/widget/text/wavy_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kartal/kartal.dart';
 
-
-//Ne kadar splash ekranı basic olsa bile comsumer widget kullandık yani statelessin riverpod halını
-//Burada cok rıverpod ıle ılgılı ıslem yapmayacak da olsak best practice oldugu için kullanıyoruz.
 //ConsumerWidget kullanmak, kodun ileride daha kolay yönetilebilir ve değiştirilebilir
 //olmasını sağlayan proaktif bir yaklaşımdır. Belki ileride kullanmak isteyebiliriz.
+//Providerı dinleyebilmek için dinlediğimiz sınıfı ConsumerStatefulWidgetdan, Consumerstateşessten turetırız.
+//ConsumerStatelessWidget, klasik StatelessWidget gibi davranır ama içinde ref.watch(...) çağrısı yapabilmeni sağlar.
+//Provider'ın state’i değişirse, build metodu yeniden çağrılır.
+//Kendi içinde widget’a ait local (geçici) bir state varsa (örneğin bir TextEditingController, AnimationController, 
+//initState, vs.) işte o zaman ConsumerStatefulWidget kullanman gerekir.
 class SplashView extends ConsumerStatefulWidget {
   const SplashView({super.key});
 
@@ -20,6 +22,10 @@ class SplashView extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _State();
 }
 
+//SplashProvider state'i yönetecek değiştirecek olan sınıf. Statenotifier sınıfından türer
+//Ref başka providerlara da erişebilir. Bir provider içinden diğer provider'lara erişmek için kullanılır.
+//SplashState UI’da kullanılan veri (ne gösterileceğini belirler).
+//Uygulamanın "anlık durumu"nu tutan veri sınıfı. 
 class _State extends ConsumerState<SplashView> with SplashViewListenMixin{
 
   final splashProvider = StateNotifierProvider<SplashProvider,SplashState>((ref) {
@@ -30,7 +36,7 @@ class _State extends ConsumerState<SplashView> with SplashViewListenMixin{
   //Provider değeri değiştiğinde widget'ı otomatik olarak yeniden build eder
   //Değeri doğrudan döndürür, bu yüzden bir değişkene atayabilirsiniz
   
-  //Değişiklikleri dinler ama değeri döndürmez Değer değiştiğinde widget'ı yeniden build etmez
+  //ref.listen() Değişiklikleri dinler ama değeri döndürmez Değer değiştiğinde widget'ı yeniden build etmez
   //Değişiklikler olduğunda belirli bir aksiyon gerçekleştirir
   //Yan etkiler (navigasyon, dialog gösterme, toast mesajı) için kullanılır
   @override

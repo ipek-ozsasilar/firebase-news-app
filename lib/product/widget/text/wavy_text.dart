@@ -1,8 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
-
 import 'package:flutter_firebase_news_app/product/constants/color_constants.dart';
 
 class WavyBoldText extends StatelessWidget {
@@ -11,6 +9,8 @@ class WavyBoldText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //Flutter'da animasyonları hem animated_text_kit gibi özel Flutter widget paketleriyle,
+    //hem de Lottie gibi JSON tabanlı hazır animasyon sistemleriyle sağlayabilirsin
     return AnimatedTextKit(
       repeatForever: true,
       animatedTexts: [

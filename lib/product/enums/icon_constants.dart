@@ -24,17 +24,7 @@ enum IconConstants {
   final String value;
   const IconConstants(this.value);
 
-  String get toPng => 'assets/icon/$value.png';
-  Image get toImage => Image.asset(toPng);
+  String get toUrl => 'assets/icon/$value.png';
+  Image get toImage => Image.asset(toUrl);
 }
 
-
-
-class MyWidget extends StatelessWidget {
-  const MyWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(IconConstants.microphone.toPng);
-  }
-}

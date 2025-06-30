@@ -10,6 +10,5 @@ class ColorConstants{
  static Color white=Colors.white;
  static Color grayPrimary=Color(0xff808080);
  static Color grayLighter=Color(0xffF3F4F6);
-
 }
 

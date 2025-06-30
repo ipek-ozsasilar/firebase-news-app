@@ -8,6 +8,7 @@ class VersionManager {
  
   //Version numarası . içerdıgı ıcın karsılastırma yapabılmek ıcın splıtledık.
   bool isNeedUpdate() {
+    //Bu, bir String'i . karakterine göre parçalar ve bir liste (List<String>) döndürür.
     //split işlemi yapınca ve ardından joinleyınce string doner ardından bunu int e parse ettık
     final deviceNumberSplited= deviceValue.split('.').join(''); 
     final databaseNumberSplited= databaseValue.split('.').join(''); 

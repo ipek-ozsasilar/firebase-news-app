@@ -16,7 +16,7 @@ class VersionCustomException implements Exception {
   
   @override
   String toString() {
-    return "$this.description";
+    return "${this.description}";
   }
   
 }

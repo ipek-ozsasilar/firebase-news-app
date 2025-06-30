@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 //Bu kural sınıfın kendisini değil, sınıftan oluşturulan nesnelerin içindeki değişkenlerin değiştirilmemesini şart koşar
 //Eğer @immutable yazarsan, sınıfın içindeki değişkenlerin tümü final olmak zorundadır.
 //Static alanlar için Dart linter bu kurala karışmaz. Sadece bu sınıfın nesnesinin değişkenleri içindir.
+//static const değişkenler zaten @immutable’dan etkilenmez. @immutable, bu değişkenleri zaten değiştirilemez kabul eder. Çünkü:
+//Bunlar instance’ın değil, sınıfın malıdır .  Linter (static analiz) ile hataları erkenden yakalarsın.
+//Yani biz bu degıskenlerı sadece okuyacagız baska herhangı bır ıslem yapmayacagız
 @immutable
 class StringConstants {
   const StringConstants._();
