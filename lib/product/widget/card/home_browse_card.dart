@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_firebase_news_app/product/constants/color_constants.dart';
 import 'package:flutter_firebase_news_app/product/enums/widget_sizes.dart';
 import 'package:flutter_firebase_news_app/product/models/news.dart';

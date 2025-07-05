@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_firebase_news_app/product/enums/image_sizes.dart';
 import 'package:flutter_firebase_news_app/product/models/recommended.dart';
 import 'package:kartal/kartal.dart';
@@ -26,8 +25,6 @@ class RecommendedCard extends StatelessWidget {
           
           Expanded(
             child: ListTile(
-              
-              
                 title: Text(recommended.title ?? ''),
                 subtitle: Text(recommended.description ?? ''),
               

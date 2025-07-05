@@ -1,3 +1,7 @@
+//Amaç: Paket içeriğini takma ad ile kullanarak çakışma önlemek ve kod okunabilirliğini artırmak!
+//Projede hem firebase_auth, hem firebase_ui_auth, hem firebase_core kullanılıyor olabilir.
+//Bu paketler içinde benzer isimli sınıflar olabilir: firebase.SignInScreen() dediğinde, okuyan kişi hemen anlar:
+// Bu widget firebase_ui_auth paketinden geliyor. SignInScreen() // direk çağırırsın ama hangi paket belli değil!
 import 'package:firebase_ui_auth/firebase_ui_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_news_app/feature/auth/authentication_provider.dart';
@@ -17,8 +21,7 @@ class AuthenticationView extends ConsumerStatefulWidget {
 }
 
 class _AuthenticationState extends ConsumerState<AuthenticationView> {
-  final AuthProvider = StateNotifierProvider<AuthenticationNotifier, AuthState>(
-    (ref) {
+  final AuthProvider = StateNotifierProvider<AuthenticationNotifier, AuthState>((ref) {
       return AuthenticationNotifier();
     },
   );
@@ -30,13 +33,17 @@ class _AuthenticationState extends ConsumerState<AuthenticationView> {
     // Yani kullanıcıyı manuel olarak çıkış yaptırmadığın sürece, FirebaseAuth.instance.currentUser daima o kullanıcıyı döndürür.
     //Sayfayı yenilemek veya uygulamayı yeniden başlatmak logout işlemi değildir.
     //print(FirebaseAuth.instance.currentUser);
+
+    // Daha önce giriş yapmış kullanıcı var mı? kontrolü yaptık. Yapmışşsa ana sayfaya yönlendir.
+    //Yapmamışsa login ekranını göster. Token burada ana sayfaya yönlendirme için kullanılıyor:
+    //Token alındı = Kullanıcı doğrulandı
+    //isRedirect: true = Ana sayfaya git sinyali
+    //Token cache'e kaydediliyor = Sonraki API çağrıları için
     checkUser(FirebaseAuth.instance.currentUser);
     
   }
   void checkUser(User? user) {
-    ref
-        .read(AuthProvider.notifier)
-        .fetchUserDetail(user);
+    ref.read(AuthProvider.notifier).fetchUserDetail(user);
   }
 
   @override
@@ -85,6 +92,7 @@ class _AuthenticationState extends ConsumerState<AuthenticationView> {
                         //providers kısmında Firebase Authentication için yapılandırılmış tüm kimlik doğrulama sağlayıcılarını (providers) otomatik olarak alır
                         //Örneğin, hem email/password hem Google auth etkinleştirdiyseniz, bu fonksiyon otomatik olarak her iki yöntemi de kullanıma hazır hale getirir.
                         //O uygulama için yapılandırılmış giriş sağlayıcılarını (providers) getirir.
+                        //Yaptığı iş: Firebase projesinde hangi giriş yöntemleri aktifse otomatik algılar!
                         providers: firebase.FirebaseUIAuth.providersFor(
                           //Şu anki Firebase uygulamasını temsil eder.
                           FirebaseAuth.instance.app,

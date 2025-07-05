@@ -3,7 +3,6 @@ part of '../home_view.dart';
 
 class _ActiveChip extends StatelessWidget {
   const _ActiveChip({
-    super.key,
     required this.tag,
   });
   final Tag tag;
@@ -25,7 +24,6 @@ class _ActiveChip extends StatelessWidget {
 
 class _PassiveChip extends StatelessWidget {
   const _PassiveChip({
-    super.key,
     required this.tag,
   });
  final Tag tag;

@@ -70,11 +70,5 @@ class News extends BaseFirebaseModel<News> with EquatableMixin implements IdMode
     );
   }
   
-  @override
-  set id(String? _id) {
-    // TODO: implement id
-    id=_id;
-  }
-  
   
 }

@@ -9,11 +9,11 @@ class AppTheme extends Theme {
     return ThemeData(
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: ButtonStyle(
-          padding: MaterialStateProperty.all<EdgeInsets>(
+          padding: WidgetStateProperty.all<EdgeInsets>(
            EdgeInsets.all(12),
           ),
-          backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-          textStyle: MaterialStateProperty.all<TextStyle?>(
+          backgroundColor: WidgetStateProperty.all<Color>(Colors.blue),
+          textStyle: WidgetStateProperty.all<TextStyle?>(
             //logın sign in buton textinin heightının 24 oldugunu gorunce texthemedan
             //24 heightlı textın adını aldık ve temadan okuruz
             context.general.appTheme.textTheme.headlineSmall,

@@ -46,6 +46,7 @@ mixin FirebaseUtility{
           //Sonra o yeni kopyayı tekrar state değişkenine atıyor. Diğer alanları (örneğin isLoading) değiştirmez, olduğu gibi alır
           return values;
         }
+        return null;
     
   }
 }

@@ -1,8 +1,4 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase_news_app/feature/auth/authentication_view.dart';
-import 'package:flutter_firebase_news_app/feature/home/home_create/home_create_view.dart';
-import 'package:flutter_firebase_news_app/feature/home/home_view.dart';
 import 'package:flutter_firebase_news_app/feature/splash/splash_view.dart';
 import 'package:flutter_firebase_news_app/product/constants/string_constants.dart';
 import 'package:flutter_firebase_news_app/product/initialize/application_start.dart';

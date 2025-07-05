@@ -1,12 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase_news_app/feature/auth/authentication_view.dart';
 import 'package:flutter_firebase_news_app/feature/home/home_create/home_logic.dart';
 import 'package:flutter_firebase_news_app/product/constants/color_constants.dart';
 import 'package:flutter_firebase_news_app/product/constants/string_constants.dart';
 import 'package:flutter_firebase_news_app/product/enums/widget_sizes.dart';
 import 'package:flutter_firebase_news_app/product/models/category.dart';
-import 'package:flutter_firebase_news_app/product/utility/firebase/firebase_collections.dart';
-import 'package:flutter_firebase_news_app/product/utility/firebase/firebase_utility.dart';
 import 'package:kartal/kartal.dart';
 
 class HomeCreateView extends StatefulWidget {
@@ -23,9 +22,12 @@ class _HomeCreateViewState extends State<HomeCreateView>{
     super.initState();
     _homeLogic=HomeLogic();
     _fetchInitialCategory();
-    
   }
 
+  //setState() çağrıldığı anda build() fonksiyonu daha önce bir kez çalışmış olmalı.
+  //initState() çalışırken, build() henüz yeniden çizim yapmamıştır ama Flutter zaten ilk kez bir "çizim"
+  // için sıraya almıştır. dolayısıyla: initState() içinde async işlemler başlatılır (API çağrısı gibi),
+  //o işlem bitince setState() çağrılarak ilk çizimden sonra UI tekrar güncellenir.
   Future<void> _fetchInitialCategory() async {
     await _homeLogic.fetchListCategory();
     
@@ -96,7 +98,11 @@ class _HomeCreateViewState extends State<HomeCreateView>{
                           
                           ),
                       ),
-                      child: _homeLogic.selectedFileBytes != null? Image.memory(_homeLogic.selectedFileBytes!) : Icon(Icons.add_a_photo_outlined)),
+                      // Bu sadece resmi EKRANDA gösterir hiçbir yere KAYDETMEZ
+                      //RAM'de (bellekte) bulunan ham byte verisinden (örneğin Uint8List) resmi oluşturur
+                      //networl gıbı ınternet gerektormez assets ve memory
+                      child: _homeLogic.selectedFileBytes != null? Image.memory(_homeLogic.selectedFileBytes!) 
+                      : Icon(Icons.add_a_photo_outlined)),
                     ),
                 ),
                 _EmptySizedBox(),
@@ -107,7 +113,7 @@ class _HomeCreateViewState extends State<HomeCreateView>{
                     fixedSize: Size.fromHeight(WidgetSizes.buttonNormal.value.toDouble()),
                     backgroundColor: ColorConstants.purplePrimary,
                   ),
-                  onPressed:_homeLogic.isValidateAllForm ? (){} : null,
+                  onPressed:_homeLogic.isValidateAllForm ? (){context.route.navigateToPage((AuthenticationView()));}: null,
                    label: Text(StringConstants.buttonSave),icon: Icon(Icons.send,))
               ],
             ),
@@ -119,7 +125,7 @@ class _HomeCreateViewState extends State<HomeCreateView>{
 }
 
 class _EmptySizedBox extends StatelessWidget {
-  const _EmptySizedBox({super.key});
+  const _EmptySizedBox();
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +135,7 @@ class _EmptySizedBox extends StatelessWidget {
 
 
 class _HomeDropDownCategory extends StatelessWidget {
-   _HomeDropDownCategory({super.key,required this.categories, required this.onSelected,});
+   _HomeDropDownCategory({required this.categories, required this.onSelected,});
   final List<CategoryModel> categories;
   final ValueSetter<CategoryModel>onSelected;
 

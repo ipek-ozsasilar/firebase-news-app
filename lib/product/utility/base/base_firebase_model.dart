@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_firebase_news_app/product/models/news.dart';
 import 'package:flutter_firebase_news_app/product/utility/exception/custom_exception.dart';
 
 //Firestore'dan veri çekerken her model için tekrar tekrar aynı kodları yazmak yerine,ortak bir temel yapı oluşturduk
 //Her modelin bir id'si olmalı (çünkü Firestore'da her dökümanın bir ID'si var).
 //Her modelin JSON'dan nesneye (fromJson) ve Firestore dökümanından nesneye (fromFirebase) dönüşümünü kolaylaştırmak için
-
+//ID alanı data()'nın içinde yoktur, DocumentSnapshot’ın kendi özelliğidir snapshot.id dıyerek erısırız.
+//data() ile gelen map’in içinde ID olmadığı için bunu ayrıca belirtmek zorundayız.
 
 //Tüm modellerin (örneğin News) bir id alanı olmasını zorunlu kıldık
 //Yani, bu soyut sınıfı extend eden her modelde id olacak.

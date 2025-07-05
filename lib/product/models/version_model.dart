@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_firebase_news_app/product/models/news.dart';
 import 'package:flutter_firebase_news_app/product/utility/base/base_firebase_model.dart';
 //map<string,dynamic> veri turunu fırebaseden gelen 2–3 model için 3 ek paket yüklemek bazen gereksiz gelir.
 //Başlangıç süresi uzar	flutter pub run build_runner build ile uğraşmak zaman alabilir.
@@ -7,7 +6,14 @@ import 'package:flutter_firebase_news_app/product/utility/base/base_firebase_mod
 //O nedenle json seriazible kullanmak küçük projelerde pek mantıklı değildir daha çok manuel
 //olarak elle yazmak veya dartj vs kullanmak daha mantıklıdır.
 class Version extends BaseFirebaseModel<Version> with EquatableMixin implements IdModel {
+  
+
   final String? number;
+  //Kullanmayacağımız için boş string döndürdük
+  //Normalde hangı doc'u cekecegımızı belırtmek ıcın id yi kullanırız ama burada gerek duymadık cunku zaten
+  //docs ısımlerını androıd ve ios yaptık bu yuzden id cekmemeıze ıhtıyac yok suan tojsona da ıhtıyac yok olmasa da olur
+  @override
+  final String? id = ''; 
 
   Version({
     this.number,
@@ -24,7 +30,7 @@ class Version extends BaseFirebaseModel<Version> with EquatableMixin implements 
     );
   }
 
-  
+
   //factory methodu bir constructor gibi çalışır: Version.fromJson(json)
   //Version sınıfından yeni bir nesne üretmek için doğru ve doğal yöntemdir.
   //Factory sayesinde daha sonra ister: cache kullanabilirsin,farklı sınıf döndürebilirsin,
@@ -45,10 +51,7 @@ class Version extends BaseFirebaseModel<Version> with EquatableMixin implements 
     };
   }
   
-  @override
-  //Kullanmayacağımız için boş string döndürdük
-  //Normalde hangı doc'u cekecegımızı belırtmek ıcın id yi kullanırız ama burada gerek duymadık cunku zaten
-  //docs ısımlerını androıd ve ios yaptık bu yuzden id cekmemeıze ıhtıyac yok suan tojsona da ıhtıyac yok olmasa da olur
-  // TODO: implement id
-  String? get id => ' ';
+
+
+  
 }

@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_firebase_news_app/product/initialize/app_cache.dart';
 
-enum CacheItems {
+enum CacheItemsKey {
   //kaydedeceğimiz tokenı token dşye bir keye kaydedecegız
   token;
   

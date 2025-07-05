@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_firebase_news_app/product/models/recommended.dart';
 import 'package:flutter_firebase_news_app/product/models/tag.dart';
 import 'package:flutter_firebase_news_app/product/utility/firebase/firebase_utility.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; 
 import 'package:flutter_firebase_news_app/product/models/news.dart';
-import 'package:flutter_firebase_news_app/product/utility/exception/custom_exception.dart';
 import 'package:flutter_firebase_news_app/product/utility/firebase/firebase_collections.dart';
 
 class HomeNotifier extends StateNotifier<HomeState> with FirebaseUtility{
@@ -93,7 +91,11 @@ class HomeNotifier extends StateNotifier<HomeState> with FirebaseUtility{
     //sonra dıgerlerı bu degerlerı kullanarak data cekme ıslemı yapacaksa bu bagımlılık olur ve sırayla yapılması gerekır
     //Bunu yapmak ıcın future.wait kullanılır cunku bırbırlerıne bır bagımlılıkları yoktur
     //Boylelıkle 3 unu de aynı anda future queue (kuyruguna) koyar ve calıstırır
-    Future.wait([
+    //Future.wait([...]) ise bir bekleme noktası (checkpoint) oluşturur:
+    //Bu fonksiyonlar asenkron (async) ve await kullanılmadığı için, Dart beklemez, başlatır ve sonraki satıra hemen geçer!
+    
+    //yani 3 u eszamanlı calısır ve hepsi bitene kadar bekler ardından diger koda gecer
+    await Future.wait([
       fetchNews(),
       fetchTags(),
       fetchRecommended(),

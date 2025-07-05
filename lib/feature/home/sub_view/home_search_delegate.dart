@@ -4,7 +4,14 @@ import 'package:flutter_firebase_news_app/product/models/tag.dart';
 //SearchDelegate, bir arama sayfası (UI) oluşturmak için kullanılan hazır bir abstract class'tır.
 //Bir kullanıcı arama ikonuna tıkladığında açılan tam ekran arama arayüzünü (search page) oluşturmak 
 //için SearchDelegate sınıfı kullanılır. Uygulama içinde metin arama yapılmasını sağlamak. Gelişmiş
-// arama önerileri, sonuçlar, geri butonu gibi şeyleri kolayca yönetmekiçin kullanılır
+// arama önerileri, sonuçlar, geri butonu gibi şeyleri kolayca yönetmek için kullanılır
+
+//Searchdeleggate sınıfından extends edıyoruz ve bıze 4 overrıde etmemız gereken metot verıyor.
+//buildActions, buildLeading, buildResults, buildSuggestions
+//buildActions Arama kutusunun sağ tarafındaki aksiyon (icon) butonlarını tanımlar.
+//buildLeading Arama kutusunun sol tarafındaki ikon (genelde geri dönüş butonu) tanımlanır.
+//buildResults Kullanıcı bir arama yaptıktan (Enter'a bastıktan) sonra arama sonuçlarını gösterir.
+//buildSuggestions Kullanıcı arama kutusuna bir şeyler yazarken öneri listesi gösterir.
 class HomeSearchDelegate extends SearchDelegate<Tag?> {
   final List<Tag> tagItems;
 
@@ -28,6 +35,9 @@ class HomeSearchDelegate extends SearchDelegate<Tag?> {
   Widget? buildLeading(BuildContext context) {
     return IconButton(
       onPressed: (){
+        // Bu, SearchDelegate sınıfının içinde tanımlı bir methoddur.
+        //Açılmış olan arama sayfasını kapatır ve eğer istersen bir sonuç (result) döndürür.
+        // close(context, selectedTag); // seçilen tag geri döner
         close(context, null);
       },
        icon: Icon(Icons.arrow_back_outlined));
@@ -36,6 +46,11 @@ class HomeSearchDelegate extends SearchDelegate<Tag?> {
   //Kullanıcı arama yaptıktan sonra ne gösterileceğini tanımlar.
   @override
   Widget buildResults(BuildContext context) {
+    //where ıle her eleman ıle bu fıltreyı uygulayacagını soyledı
+    //arama kısmına yazdıgımız metnı yanıo queryyı bu taglıst ıcınde var mı dıye kontrol eder
+    //toLowerCase() ile büyük küçük harf duyarlılığını kaldırıyoruz
+    //orn tag beyza ise ve bey veya z bıle yazsak bu resulta dahıl edılır
+    //Çünkü .contains() bir alt string (substring) aramasıdır.
     final results=tagItems.where((element) => element.name?.toLowerCase().contains(query.toLowerCase()) ?? false);
 
     return ListView.builder(

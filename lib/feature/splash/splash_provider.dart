@@ -45,7 +45,8 @@ class SplashProvider extends StateNotifier<SplashState>{
     state=state.copyWith(inRedirectHome: true);
   }
 
-
+  //burada tek belge cekılecegı yanı tek bır sey number cektıgımız ıcın fetchlıst generıc fırebase verı
+  //cekme yapısını kullanmadık
   Future<String?> getVersionNumberFromDatabase() async {
     //cunku eger proje web ise direkt siteyi güncelleyip atabiliriz force update yapmaya gerek yok
     if(kIsWeb) return null;

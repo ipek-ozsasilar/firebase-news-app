@@ -127,7 +127,7 @@ class _HomeState extends ConsumerState<HomeView> {
 }
 
 class _CustomTextField extends ConsumerWidget {
-  _CustomTextField({super.key, required this.controller});
+  _CustomTextField({required this.controller});
   final TextEditingController controller;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -138,7 +138,14 @@ class _CustomTextField extends ConsumerWidget {
         if (tagList.isEmpty) {
           throw FirebaseCustomException(description: 'tags dont upload yet');
         }
-
+        
+        //showSearch, Flutter SDK içindeki yerleşik (built-in) bir fonksiyondur ve şunu yapar:
+        //Ekrana tam sayfa bir arama UI’ı getirir (search bar + otomatik listeleme), kullanıcı
+        // bir şey arayabilir, sonuçları görebilir ve seçim yapabilir.
+        //showSearch() bir Future döner, çünkü: Kullanıcı için tam sayfa bir arama ekranı açıyor
+        //Kullanıcı ya bir öğe seçiyor, ya da geri çıkıyor. İşlem tamamlandığında bir sonuç dönüyor
+        //delegate, yani "temsilci", arama ekranının UI'ını ve davranışını tanımlayan sınıftır.
+        //Yani arama ekranını tagList’e göre çalıştır diyorsun.
         final response = await showSearch<Tag?>(
           context: context,
           delegate: HomeSearchDelegate(tagItems: tagList),
@@ -161,7 +168,7 @@ class _CustomTextField extends ConsumerWidget {
 }
 
 class _TagListView extends ConsumerWidget {
-  const _TagListView({super.key});
+  const _TagListView();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -184,7 +191,7 @@ class _TagListView extends ConsumerWidget {
 }
 
 class _BrowseHorizontalListView extends ConsumerWidget {
-  const _BrowseHorizontalListView({super.key});
+  const _BrowseHorizontalListView();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -203,7 +210,7 @@ class _BrowseHorizontalListView extends ConsumerWidget {
 }
 
 class _RecommendedHeader extends StatelessWidget {
-  const _RecommendedHeader({super.key});
+  const _RecommendedHeader();
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +231,7 @@ class _RecommendedHeader extends StatelessWidget {
 }
 
 class _RecommendedListView extends ConsumerWidget {
-  const _RecommendedListView({super.key});
+  const _RecommendedListView();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -240,6 +247,8 @@ class _RecommendedListView extends ConsumerWidget {
         shrinkWrap: true,
         //Scroll sınırlarında durur (bounce/sekme efekti yoktur)
         //Glow efekti gösterir (Android'deki mavi parıldama) Over-scroll yapmaz
+        //physics parametresi, scroll'un: Nerede duracağını,Hangi hızda yavaşlayacağını,
+        //Üste/alta çarpınca sekme mi yapacağını, parıldama mı olacağını İki parmakla aynı anda kaydırma gibi özellikleri belirler.
         physics: ClampingScrollPhysics(),
         itemCount: values.length ?? 0,
         itemBuilder: (BuildContext context, int index) {

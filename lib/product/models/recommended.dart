@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_firebase_news_app/product/models/tag.dart';
 import 'package:flutter_firebase_news_app/product/utility/base/base_firebase_model.dart';
 
 @immutable
