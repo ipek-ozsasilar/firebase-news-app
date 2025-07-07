@@ -87,8 +87,11 @@ class _HomeState extends ConsumerState<HomeView> {
 
       floatingActionButton: FloatingActionButton.large(
         child: Icon(Icons.add),
-        onPressed: () {
-          context.route.navigateToPage(HomeCreateView());
+        onPressed: () async {
+          final response=await context.route.navigateToPage(HomeCreateView());
+          if(response==true){
+            ref.read(_homeProvider.notifier).fetchAndLoad();
+          }
                 }
         ),
       //Flutter'da cihazın güvenli alanında içeriği göstermek için kullanılan bir widget'dır. Modern

@@ -15,7 +15,7 @@ class HomeCreateView extends StatefulWidget {
   State<HomeCreateView> createState() => _HomeCreateViewState();
 }
 
-class _HomeCreateViewState extends State<HomeCreateView>{
+class _HomeCreateViewState extends State<HomeCreateView> with Loading{
   late final HomeLogic _homeLogic;
   @override
   void initState() {
@@ -23,6 +23,13 @@ class _HomeCreateViewState extends State<HomeCreateView>{
     _homeLogic=HomeLogic();
     _fetchInitialCategory();
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _homeLogic.dispose();
+  }
+  
 
   //setState() çağrıldığı anda build() fonksiyonu daha önce bir kez çalışmış olmalı.
   //initState() çalışırken, build() henüz yeniden çizim yapmamıştır ama Flutter zaten ilk kez bir "çizim"
@@ -43,6 +50,9 @@ class _HomeCreateViewState extends State<HomeCreateView>{
       appBar: AppBar(
         centerTitle: false,
       title: Text(StringConstants.addItemTitle),
+      actions: [
+        if(isLoading)Center(child: CircularProgressIndicator(color: ColorConstants.white,)),
+      ]
       ),
       //Form validation işlemleri kullanacağımız için form ile sarmaladık
       body:Form(
@@ -71,6 +81,7 @@ class _HomeCreateViewState extends State<HomeCreateView>{
                 }),
                 _EmptySizedBox(),
                 TextFormField(
+                  controller: _homeLogic.titleController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hint: Text(StringConstants.dropdownTitle),
@@ -113,7 +124,14 @@ class _HomeCreateViewState extends State<HomeCreateView>{
                     fixedSize: Size.fromHeight(WidgetSizes.buttonNormal.value.toDouble()),
                     backgroundColor: ColorConstants.purplePrimary,
                   ),
-                  onPressed:_homeLogic.isValidateAllForm ? (){context.route.navigateToPage((AuthenticationView()));}: null,
+                  onPressed:_homeLogic.isValidateAllForm ? null:()async{
+                    changeLoading();
+                    final response=await _homeLogic.Save();
+                    changeLoading();
+                    if(response){
+                     await context.route.pop<bool>(response);
+                    }
+                  },
                    label: Text(StringConstants.buttonSave),icon: Icon(Icons.send,))
               ],
             ),
@@ -163,5 +181,14 @@ class _HomeDropDownCategory extends StatelessWidget {
                  }
                  
                  );
+  }
+}
+
+mixin Loading on State<HomeCreateView>{
+  bool isLoading=false;
+  void changeLoading(){
+    setState(() {
+      isLoading=!isLoading;
+    });
   }
 }

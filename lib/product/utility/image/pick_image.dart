@@ -12,7 +12,7 @@ class PickImage {
     //readAsBytes() metodu bir dosyayı (bu durumda resmi) byte dizisi (Uint8List) olarak okur ve hafızaya yükler.
     //Seçilen resmi byte formatında hafızaya alır bunun amacı  Resmi göstermek, manipüle etmek, 
     //boyutlandırmak veya format değiştirmek , Firebase Storage'a veya başka bir servise yüklemek için
-  Future<Uint8List?> pickImageFromGallery() async {
+  Future<XFile?> pickImageFromGallery() async {
     // Eğer zaten aktifse, işlemi durdur
     if (_isActive) {
       print("Image picker zaten aktif, lütfen bekleyin...");
@@ -27,7 +27,7 @@ class PickImage {
       //readAsBytes() metodu bir dosyayı (bu durumda resmi) byte dizisi (Uint8List) olarak okur ve hafızaya yükler.
       //Seçilen resmi byte formatında hafızaya alır bunun amacı  Resmi göstermek, manipüle etmek, 
       //boyutlandırmak veya format değiştirmek , Firebase Storage'a veya başka bir servise yüklemek için
-      return await image?.readAsBytes();
+      return image;
       
     } catch (e) {
       print("Resim seçme hatası: $e");
